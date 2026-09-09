@@ -1,13 +1,13 @@
 package com.istad.tourmanagementapi.featurs.destination.entity;
+
 import com.istad.tourmanagementapi.featurs.enums.DestinationStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -16,29 +16,26 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "destinations")
-public class Destination  {
+public class Destination {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(max = 150)
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
+    @Size(max = 100)
     private String province;
 
+    @NotBlank
+    @Size(max = 100)
+    @Column(nullable = false)
     private String country;
 
-    private Double latitude;
-
-    private Double longitude;
-
-    @Column(name = "image_url")
-    private List<String> imageUrl;
-
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DestinationStatus status;

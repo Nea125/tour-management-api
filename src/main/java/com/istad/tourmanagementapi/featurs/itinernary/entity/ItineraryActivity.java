@@ -1,6 +1,7 @@
 package com.istad.tourmanagementapi.featurs.itinernary.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalTime;
 
-// No createdAt/updatedAt in the schema, so this does NOT extend BaseEntity.
 @Getter
 @Setter
 @Builder
@@ -23,23 +23,28 @@ public class ItineraryActivity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "itinerary_id", nullable = false)
-    private Itinerary itinerary;
 
+
+    @NotBlank
+    @Size(max = 150)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "start_time")
     private LocalTime startTime;
 
-    @Column(name = "end_time")
     private LocalTime endTime;
 
+    @Size(max = 200)
     private String location;
 
-    @Column(name = "sort_order")
+    @PositiveOrZero
+    @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
+
+    // Relationships with itinerary [Many-to-One: Many Activities have One Itinerary]
+    @ManyToOne
+    @JoinColumn(name = "itinerary_id")
+    private Itinerary itinerary;
 }

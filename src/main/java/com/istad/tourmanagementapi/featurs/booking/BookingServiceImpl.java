@@ -26,10 +26,18 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse create(BookingRequest request) {
+
         Booking booking = bookingMapper.toEntity(request);
-        booking.setUser(getUserById(request.userId()));
-        booking.setTourSchedule(getScheduleById(request.scheduleId()));
-        return bookingMapper.toResponse(bookingRepository.save(booking));
+
+        User user = getUserById(request.userId());
+        Schedule schedule = getScheduleById(request.scheduleId());
+
+        booking.setUser(user);
+        booking.setSchedule(schedule);
+
+        return bookingMapper.toResponse(
+                bookingRepository.save(booking)
+        );
     }
 
     @Override
@@ -39,44 +47,76 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Page<BookingResponse> findAll(int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size);
-        return bookingRepository.findAll(pageable).map(bookingMapper::toResponse);
+
+        return bookingRepository
+                .findAll(pageable)
+                .map(bookingMapper::toResponse);
     }
 
     @Override
     public BookingResponse update(Long id, BookingRequest request) {
+
         Booking booking = getById(id);
+
         bookingMapper.updateEntity(request, booking);
+
         if (request.userId() != null) {
-            booking.setUser(getUserById(request.userId()));
+            booking.setUser(
+                    getUserById(request.userId())
+            );
         }
+
         if (request.scheduleId() != null) {
-            booking.setTourSchedule(getScheduleById(request.scheduleId()));
+            booking.setSchedule(
+                    getScheduleById(request.scheduleId())
+            );
         }
-        return bookingMapper.toResponse(bookingRepository.save(booking));
+
+        return bookingMapper.toResponse(
+                bookingRepository.save(booking)
+        );
     }
 
     @Override
     public void delete(Long id) {
+
         Booking booking = getById(id);
+
         bookingRepository.delete(booking);
     }
 
     private Booking getById(Long id) {
+
         return bookingRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Booking not found with id: " + id));
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Booking not found with id: " + id
+                        )
+                );
     }
 
     private User getUserById(Long id) {
+
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "User not found with id: " + id));
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "User not found with id: " + id
+                        )
+                );
     }
 
     private Schedule getScheduleById(Long id) {
+
         return scheduleRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Schedule not found with id: " + id));
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Schedule not found with id: " + id
+                        )
+                );
     }
 }

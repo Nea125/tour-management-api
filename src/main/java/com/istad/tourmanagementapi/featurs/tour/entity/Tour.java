@@ -1,19 +1,23 @@
 package com.istad.tourmanagementapi.featurs.tour.entity;
+
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
 import com.istad.tourmanagementapi.featurs.enums.TourStatus;
+import com.istad.tourmanagementapi.featurs.itinernary.entity.Itinerary;
+import com.istad.tourmanagementapi.featurs.review.entity.Review;
+import com.istad.tourmanagementapi.featurs.schedule.entity.Schedule;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
 @Setter
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -24,22 +28,24 @@ public class Tour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "destination_id", nullable = false)
-    private Destination destination;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+
+    @Positive
     @Column(name = "duration_days", nullable = false)
     private Integer durationDays;
+
 
     @Column(name = "duration_nights", nullable = false)
     private Integer durationNights;
 
+
+    @Positive
     @Column(name = "max_participants", nullable = false)
     private Integer maxParticipants;
 
@@ -50,10 +56,20 @@ public class Tour {
     @Column(nullable = false)
     private TourStatus status;
 
+    //Relationship with Destination [Many tours have one destination]
+    @ManyToOne
+    @JoinColumn(name = "destination_id", nullable = false)
+    private Destination destination;
 
-    @ElementCollection
-    @CollectionTable(name = "tour_images", joinColumns = @JoinColumn(name = "tour_id"))
-    @Column(name = "image_url")
-    @OrderColumn(name = "sort_order")
-    private List<String> images;
+    // Relationship with Schedule [One tours have many schedules]
+    @OneToMany(mappedBy = "tour")
+    List<Schedule> schedules;
+
+    // Relationship with Itinerary [One tours have Many itineraries]
+    @OneToMany(mappedBy = "tour")
+    private List<Itinerary> itinerary;
+
+// Relationship with Review [One tours have Many reviews]
+    @OneToMany(mappedBy = "tour")
+    private List<Review> reviews;
 }

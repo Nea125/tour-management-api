@@ -1,7 +1,7 @@
 package com.istad.tourmanagementapi.featurs.booking.entity;
 
-import com.istad.tourmanagementapi.featurs.booking.entity.Booking;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,10 +10,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-// No createdAt/updatedAt in the schema, so this does NOT extend BaseEntity.
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -24,19 +22,26 @@ public class BookingParticipant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking;
 
+
+    @Size(max = 150)
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
     private String gender;
 
+    @Past
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "phone must be a valid number")
     private String phone;
 
+    @Email
     private String email;
+
+ // Relationships with booking [Many-to-One: Many Participants have One Booking]
+    @ManyToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
 }
