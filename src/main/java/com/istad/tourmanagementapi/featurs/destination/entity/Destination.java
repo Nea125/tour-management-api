@@ -51,8 +51,5 @@ public class Destination {
     @NotNull
     Long longitude;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private DestinationStatus status;
+    boolean isDeleted;
 }

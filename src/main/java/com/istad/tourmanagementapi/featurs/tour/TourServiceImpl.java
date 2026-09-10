@@ -2,10 +2,10 @@ package com.istad.tourmanagementapi.featurs.tour;
 
 import com.istad.tourmanagementapi.featurs.destination.DestinationRepository;
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
-import com.istad.tourmanagementapi.featurs.enums.TourStatus;
 import com.istad.tourmanagementapi.featurs.tour.dto.TourRequest;
 import com.istad.tourmanagementapi.featurs.tour.dto.TourResponse;
 import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
+import com.istad.tourmanagementapi.featurs.tour.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +40,7 @@ public class TourServiceImpl implements TourService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return tourRepository.findAll(pageable)
+        return tourRepository.findByIsDeletedFalse(pageable)
                 .map(tourMapper::toResponse);
     }
 

@@ -3,6 +3,7 @@ package com.istad.tourmanagementapi.featurs.destination;
 import com.istad.tourmanagementapi.featurs.destination.dto.DestinationRequest;
 import com.istad.tourmanagementapi.featurs.destination.dto.DestinationResponse;
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
+import com.istad.tourmanagementapi.featurs.destination.mapper.DestinationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,18 +26,26 @@ public class DestinationServiceImpl implements DestinationService {
                     "Destination already exists with name: " + request.name());
         }
         Destination destination = destinationMapper.toEntity(request);
+        destination.setDeleted(false);
         return destinationMapper.toResponse(destinationRepository.save(destination));
     }
 
     @Override
     public DestinationResponse findById(Long id) {
+
         return destinationMapper.toResponse(getById(id));
     }
 
     @Override
     public Page<DestinationResponse> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return destinationRepository.findAll(pageable).map(destinationMapper::toResponse);
+        return destinationRepository.findByIsDeletedFalse(pageable).map(destinationMapper::toResponse);
+    }
+
+    @Override
+    public Page<DestinationResponse> search(String title, int page, int size) {
+       return  destinationRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(title, PageRequest.of(page, size))
+                .map(destinationMapper::toResponse);
     }
 
     @Override
@@ -49,11 +58,12 @@ public class DestinationServiceImpl implements DestinationService {
     @Override
     public void delete(Long id) {
         Destination destination = getById(id);
-        destinationRepository.delete(destination);
+        destination.setDeleted(true);
+        destinationRepository.save(destination);
     }
 
     private Destination getById(Long id) {
-        return destinationRepository.findById(id)
+        return destinationRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Destination not found with id: " + id));
     }

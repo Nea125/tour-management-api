@@ -1,4 +1,4 @@
-package com.istad.tourmanagementapi.featurs.destination;
+package com.istad.tourmanagementapi.featurs.destination.mapper;
 
 import com.istad.tourmanagementapi.featurs.destination.dto.DestinationRequest;
 import com.istad.tourmanagementapi.featurs.destination.dto.DestinationResponse;

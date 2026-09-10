@@ -6,6 +6,7 @@ import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,24 @@ public class DestinationController {
                 .data(destinationService.findById(id))
                 .build();
     }
+    @GetMapping("/search")
+    public ApiResponse<?> search(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        Page<DestinationResponse> result =
+                destinationService.search(name, page, size);
+
+        return ApiResponse.builder()
+                .status(1)
+                .message("Destinations searched successfully")
+                .data(result.getContent())
+                .pagination(pageMapper.mapToPageResponse(result))
+                .build();
+    }
+
 
     @GetMapping
     public ApiResponse<?> findAll(
@@ -59,7 +78,7 @@ public class DestinationController {
                 .build();
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/{id}/delete")
     public ApiResponse<Void> delete(@PathVariable Long id) {
         destinationService.delete(id);
         return ApiResponse.<Void>builder()

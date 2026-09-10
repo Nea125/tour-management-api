@@ -13,6 +13,7 @@ public record DestinationResponse(
         Double latitude,
         Double longitude,
         List<String> imageUrl,
-        DestinationStatus status
+        boolean isDeleted
+
 ) {
 }

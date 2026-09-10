@@ -1,4 +1,4 @@
-package com.istad.tourmanagementapi.featurs.tour;
+package com.istad.tourmanagementapi.featurs.tour.mapper;
 
 import com.istad.tourmanagementapi.featurs.tour.dto.TourRequest;
 import com.istad.tourmanagementapi.featurs.tour.dto.TourResponse;
