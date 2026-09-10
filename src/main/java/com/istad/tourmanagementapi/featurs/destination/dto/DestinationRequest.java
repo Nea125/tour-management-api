@@ -9,8 +9,8 @@ public record DestinationRequest(
         String description,
         String province,
         String country,
-        Double latitude,
-        Double longitude,
+        Long latitude,
+        Long longitude,
         List<String> imageUrl,
         DestinationStatus status
 ) {

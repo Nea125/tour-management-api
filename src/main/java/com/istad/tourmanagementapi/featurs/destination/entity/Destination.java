@@ -9,9 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -22,18 +23,33 @@ public class Destination {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+
     @Size(max = 150)
     @Column(nullable = false)
     private String name;
 
+
+    @Column(nullable = false)
+    String description;
+
+
+
     @Size(max = 100)
     private String province;
 
-    @NotBlank
+
     @Size(max = 100)
     @Column(nullable = false)
     private String country;
+
+    @Column(nullable = false,name = "image_url")
+    List<String> imageUrl;
+
+    @NotNull
+    Long latitude;
+
+    @NotNull
+    Long longitude;
 
     @NotNull
     @Enumerated(EnumType.STRING)

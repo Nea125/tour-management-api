@@ -21,7 +21,7 @@ public class DestinationController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<DestinationResponse> create(@RequestBody DestinationRequest request) {
         return ApiResponse.<DestinationResponse>builder()
-                .status(HttpStatus.CREATED.value())
+                .status(1)
                 .message("Destination created successfully")
                 .data(destinationService.create(request))
                 .build();
@@ -30,7 +30,7 @@ public class DestinationController {
     @GetMapping("/{id}")
     public ApiResponse<DestinationResponse> findById(@PathVariable Long id) {
         return ApiResponse.<DestinationResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Destination retrieved successfully")
                 .data(destinationService.findById(id))
                 .build();
@@ -42,7 +42,7 @@ public class DestinationController {
             @RequestParam(defaultValue = "10") int size) {
         Page<DestinationResponse> result = destinationService.findAll(page, size);
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Destinations retrieved successfully")
                 .data(result.getContent())
                 .pagination(pageMapper.mapToPageResponse(result))
@@ -53,7 +53,7 @@ public class DestinationController {
     public ApiResponse<DestinationResponse> update(@PathVariable Long id,
                                                    @RequestBody DestinationRequest request) {
         return ApiResponse.<DestinationResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Destination updated successfully")
                 .data(destinationService.update(id, request))
                 .build();
@@ -63,7 +63,7 @@ public class DestinationController {
     public ApiResponse<Void> delete(@PathVariable Long id) {
         destinationService.delete(id);
         return ApiResponse.<Void>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Destination deleted successfully")
                 .build();
     }

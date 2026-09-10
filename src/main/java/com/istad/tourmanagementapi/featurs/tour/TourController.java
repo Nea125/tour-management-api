@@ -21,7 +21,7 @@ public class TourController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TourResponse> create(@RequestBody TourRequest request) {
         return ApiResponse.<TourResponse>builder()
-                .status(HttpStatus.CREATED.value())
+                .status(1)
                 .message("Tour created successfully")
                 .data(tourService.create(request))
                 .build();
@@ -30,7 +30,7 @@ public class TourController {
     @GetMapping("/{id}")
     public ApiResponse<TourResponse> findById(@PathVariable Long id) {
         return ApiResponse.<TourResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Tour retrieved successfully")
                 .data(tourService.findById(id))
                 .build();
@@ -40,10 +40,30 @@ public class TourController {
     public ApiResponse<?> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<TourResponse> result = tourService.findAll(page, size);
+
+        Page<TourResponse> result =
+                tourService.findAll(page, size);
+
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Tours retrieved successfully")
+                .data(result.getContent())
+                .pagination(pageMapper.mapToPageResponse(result))
+                .build();
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<?> search(
+            @RequestParam String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<TourResponse> result =
+                tourService.search(title, page, size);
+
+        return ApiResponse.builder()
+                .status(1)
+                .message("Tours searched successfully")
                 .data(result.getContent())
                 .pagination(pageMapper.mapToPageResponse(result))
                 .build();
@@ -53,17 +73,17 @@ public class TourController {
     public ApiResponse<TourResponse> update(@PathVariable Long id,
                                             @RequestBody TourRequest request) {
         return ApiResponse.<TourResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Tour updated successfully")
                 .data(tourService.update(id, request))
                 .build();
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/{id}/update")
     public ApiResponse<Void> delete(@PathVariable Long id) {
         tourService.delete(id);
         return ApiResponse.<Void>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Tour deleted successfully")
                 .build();
     }

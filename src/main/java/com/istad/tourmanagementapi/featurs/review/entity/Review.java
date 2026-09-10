@@ -6,7 +6,6 @@ import com.istad.tourmanagementapi.featurs.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,17 +32,17 @@ public class Review {
     private String comment;
 
 
-// Relationship with Tour
+    // Relationship with Tour [Many to one: Much review belongs to one tour]
     @ManyToOne
-    @JoinColumn(name = "tour_id", nullable = false)
+    @JoinColumn(name = "tour_id", nullable = false )
     private Tour tour;
 
-// Relationship with Booking
+    //Relationship with Booking
     @OneToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
-    // Relationship with User [One user can have many reviews]
+    //Relationship with User [One user can have many reviews]
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

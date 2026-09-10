@@ -8,7 +8,6 @@ import com.istad.tourmanagementapi.featurs.schedule.entity.Schedule;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -52,9 +51,11 @@ public class Tour {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TourStatus status;
+    @Column(name = "image_url")
+    private List<String> images;
+
+    @Column(name = "is_deleted", nullable = false)
+    Boolean isDeleted;
 
     //Relationship with Destination [Many tours have one destination]
     @ManyToOne
@@ -69,7 +70,7 @@ public class Tour {
     @OneToMany(mappedBy = "tour")
     private List<Itinerary> itinerary;
 
-// Relationship with Review [One tours have Many reviews]
+    // Relationship with Review [One tours have Many reviews]
     @OneToMany(mappedBy = "tour")
     private List<Review> reviews;
 }

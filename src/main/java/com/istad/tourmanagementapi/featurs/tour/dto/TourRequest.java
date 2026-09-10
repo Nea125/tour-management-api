@@ -13,7 +13,6 @@ public record TourRequest(
         Integer durationNights,
         Integer maxParticipants,
         BigDecimal price,
-        TourStatus status,
         List<String> images
 ) {
 }

@@ -18,7 +18,13 @@ public interface TourMapper {
     @Mapping(target = "destinationId", source = "destination.id")
     TourResponse toResponse(Tour tour);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(
+            nullValuePropertyMappingStrategy =
+                    NullValuePropertyMappingStrategy.IGNORE
+    )
     @Mapping(target = "destination", ignore = true)
-    void updateEntity(TourRequest request, @MappingTarget Tour tour);
+    void updateEntity(
+            TourRequest request,
+            @MappingTarget Tour tour
+    );
 }

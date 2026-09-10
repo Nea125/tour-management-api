@@ -2,6 +2,7 @@ package com.istad.tourmanagementapi.featurs.tour;
 
 import com.istad.tourmanagementapi.featurs.destination.DestinationRepository;
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
+import com.istad.tourmanagementapi.featurs.enums.TourStatus;
 import com.istad.tourmanagementapi.featurs.tour.dto.TourRequest;
 import com.istad.tourmanagementapi.featurs.tour.dto.TourResponse;
 import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
@@ -24,6 +25,7 @@ public class TourServiceImpl implements TourService {
     @Override
     public TourResponse create(TourRequest request) {
         Tour tour = tourMapper.toEntity(request);
+        tour.setIsDeleted(false);
         tour.setDestination(getDestinationById(request.destinationId()));
         return tourMapper.toResponse(tourRepository.save(tour));
     }
@@ -35,9 +37,27 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public Page<TourResponse> findAll(int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size);
-        return tourRepository.findAll(pageable).map(tourMapper::toResponse);
+
+        return tourRepository.findAll(pageable)
+                .map(tourMapper::toResponse);
     }
+
+    @Override
+    public Page<TourResponse> search(String title, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return tourRepository
+                .findByIsDeletedFalseAndTitleContainingIgnoreCase(
+                        title,
+                        pageable
+                )
+                .map(tourMapper::toResponse);
+    }
+
+
 
     @Override
     public TourResponse update(Long id, TourRequest request) {
@@ -52,14 +72,19 @@ public class TourServiceImpl implements TourService {
     @Override
     public void delete(Long id) {
         Tour tour = getById(id);
-        tourRepository.delete(tour);
+        tour.setIsDeleted(true);
+        tourRepository.save(tour);
     }
 
     private Tour getById(Long id) {
-        return tourRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Tour not found with id: " + id));
+        return tourRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Tour not found with id: " + id
+                ));
     }
+
+
 
     private Destination getDestinationById(Long id) {
         return destinationRepository.findById(id)

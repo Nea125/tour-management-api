@@ -11,7 +11,7 @@ public interface TourService {
     TourResponse findById(Long id);
 
     Page<TourResponse> findAll(int page, int size);
-
+    Page<TourResponse> search(String title, int page, int size);
     TourResponse update(Long id, TourRequest request);
 
     void delete(Long id);

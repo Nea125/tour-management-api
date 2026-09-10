@@ -21,13 +21,6 @@ repositories {
 dependencies {
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    // Keycloak Admin Client dependency
-    implementation 'org.keycloak:keycloak-admin-client:26.0.12'
-
-    // Security dependency
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
-    testImplementation 'org.springframework.security:spring-security-test'
 
     // PostgresSQL
     runtimeOnly 'org.postgresql:postgresql'
