@@ -1,7 +1,7 @@
-package com.istad.tourmanagementapi.featurs.itinernary;
+package com.istad.tourmanagementapi.featurs.Activity;
 
-import com.istad.tourmanagementapi.featurs.itinernary.dto.ItineraryRequest;
-import com.istad.tourmanagementapi.featurs.itinernary.dto.ItineraryResponse;
+import com.istad.tourmanagementapi.featurs.Activity.dto.ActivityRequest;
+import com.istad.tourmanagementapi.featurs.Activity.dto.ActivityResponse;
 import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageMapper;
 import lombok.RequiredArgsConstructor;
@@ -10,17 +10,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/itineraries")
+@RequestMapping("/api/v1/activity")
 @RequiredArgsConstructor
-public class ItineraryController {
+public class ActivityController {
 
-    private final ItineraryService itineraryService;
+    private final ActivityService itineraryService;
     private final PageMapper pageMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<ItineraryResponse> create(@RequestBody ItineraryRequest request) {
-        return ApiResponse.<ItineraryResponse>builder()
+    public ApiResponse<ActivityResponse> create(@RequestBody ActivityRequest request) {
+        return ApiResponse.<ActivityResponse>builder()
                 .status(HttpStatus.CREATED.value())
                 .message("Itinerary created successfully")
                 .data(itineraryService.create(request))
@@ -28,9 +28,9 @@ public class ItineraryController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<ItineraryResponse> findById(@PathVariable Long id) {
-        return ApiResponse.<ItineraryResponse>builder()
-                .status(HttpStatus.OK.value())
+    public ApiResponse<ActivityResponse> findById(@PathVariable Long id) {
+        return ApiResponse.<ActivityResponse>builder()
+                .status(1)
                 .message("Itinerary retrieved successfully")
                 .data(itineraryService.findById(id))
                 .build();
@@ -40,31 +40,31 @@ public class ItineraryController {
     public ApiResponse<?> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<ItineraryResponse> result = itineraryService.findAll(page, size);
+        Page<ActivityResponse> result = itineraryService.findAll(page, size);
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
-                .message("Itineraries retrieved successfully")
+                .status(1)
+                .message("Activity retrieved successfully")
                 .data(result.getContent())
                 .pagination(pageMapper.mapToPageResponse(result))
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<ItineraryResponse> update(@PathVariable Long id,
-                                                 @RequestBody ItineraryRequest request) {
-        return ApiResponse.<ItineraryResponse>builder()
-                .status(HttpStatus.OK.value())
-                .message("Itinerary updated successfully")
+    public ApiResponse<ActivityResponse> update(@PathVariable Long id,
+                                                @RequestBody ActivityRequest request) {
+        return ApiResponse.<ActivityResponse>builder()
+                .status(1)
+                .message("Activity updated successfully")
                 .data(itineraryService.update(id, request))
                 .build();
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/{id}/delete")
     public ApiResponse<Void> delete(@PathVariable Long id) {
         itineraryService.delete(id);
         return ApiResponse.<Void>builder()
-                .status(HttpStatus.OK.value())
-                .message("Itinerary deleted successfully")
+                .status(1)
+                .message("Activity deleted successfully")
                 .build();
     }
 }

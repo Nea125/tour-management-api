@@ -1,8 +1,7 @@
 package com.istad.tourmanagementapi.featurs.tour.entity;
 
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
-import com.istad.tourmanagementapi.featurs.enums.TourStatus;
-import com.istad.tourmanagementapi.featurs.itinernary.entity.Itinerary;
+import com.istad.tourmanagementapi.featurs.Activity.entity.Activity;
 import com.istad.tourmanagementapi.featurs.review.entity.Review;
 import com.istad.tourmanagementapi.featurs.schedule.entity.Schedule;
 import jakarta.persistence.*;
@@ -66,9 +65,9 @@ public class Tour {
     @OneToMany(mappedBy = "tour")
     List<Schedule> schedules;
 
-    // Relationship with Itinerary [One tours have Many itineraries]
+    // Relationship with Activity [One tours have Many Activities]
     @OneToMany(mappedBy = "tour")
-    private List<Itinerary> itinerary;
+    private List<Activity> activities;
 
     // Relationship with Review [One tours have Many reviews]
     @OneToMany(mappedBy = "tour")
