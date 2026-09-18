@@ -1,9 +1,9 @@
 package com.istad.tourmanagementapi.featurs.tour.entity;
 
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
-import com.istad.tourmanagementapi.featurs.Activity.entity.Activity;
+import com.istad.tourmanagementapi.featurs.activity.entity.Activity;
 import com.istad.tourmanagementapi.featurs.review.entity.Review;
-import com.istad.tourmanagementapi.featurs.schedule.entity.Schedule;
+import com.istad.tourmanagementapi.featurs.tour_schedule.entity.TourSchedule;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -63,7 +63,7 @@ public class Tour {
 
     // Relationship with Schedule [One tours have many schedules]
     @OneToMany(mappedBy = "tour")
-    List<Schedule> schedules;
+    List<TourSchedule> schedules;
 
     // Relationship with Activity [One tours have Many Activities]
     @OneToMany(mappedBy = "tour")

@@ -3,10 +3,10 @@ package com.istad.tourmanagementapi.featurs.booking;
 import com.istad.tourmanagementapi.featurs.booking.dto.BookingRequest;
 import com.istad.tourmanagementapi.featurs.booking.dto.BookingResponse;
 import com.istad.tourmanagementapi.featurs.booking.entity.Booking;
-import com.istad.tourmanagementapi.featurs.schedule.ScheduleRepository;
-import com.istad.tourmanagementapi.featurs.schedule.entity.Schedule;
-import com.istad.tourmanagementapi.featurs.user.UserRepository;
-import com.istad.tourmanagementapi.featurs.user.entity.User;
+import com.istad.tourmanagementapi.featurs.tour_schedule.TourScheduleRepository;
+import com.istad.tourmanagementapi.featurs.tour_schedule.entity.TourSchedule;
+import com.istad.tourmanagementapi.featurs.profile.UserProfileRepository;
+import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,16 +21,16 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
-    private final UserRepository userRepository;
-    private final ScheduleRepository scheduleRepository;
+    private final UserProfileRepository userRepository;
+    private final TourScheduleRepository scheduleRepository;
 
     @Override
     public BookingResponse create(BookingRequest request) {
 
         Booking booking = bookingMapper.toEntity(request);
 
-        User user = getUserById(request.userId());
-        Schedule schedule = getScheduleById(request.scheduleId());
+        UserProfile user = getUserById(request.userId());
+        TourSchedule schedule = getScheduleById(request.scheduleId());
 
         booking.setUser(user);
         booking.setSchedule(schedule);
@@ -98,7 +98,7 @@ public class BookingServiceImpl implements BookingService {
                 );
     }
 
-    private User getUserById(Long id) {
+    private UserProfile getUserById(String id) {
 
         return userRepository.findById(id)
                 .orElseThrow(() ->
@@ -109,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
                 );
     }
 
-    private Schedule getScheduleById(Long id) {
+    private TourSchedule getScheduleById(String id) {
 
         return scheduleRepository.findById(id)
                 .orElseThrow(() ->

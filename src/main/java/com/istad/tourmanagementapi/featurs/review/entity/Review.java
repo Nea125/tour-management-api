@@ -1,8 +1,8 @@
 package com.istad.tourmanagementapi.featurs.review.entity;
 
 import com.istad.tourmanagementapi.featurs.booking.entity.Booking;
+import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
 import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
-import com.istad.tourmanagementapi.featurs.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -45,5 +45,5 @@ public class Review {
     //Relationship with User [One user can have many reviews]
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserProfile user;
 }

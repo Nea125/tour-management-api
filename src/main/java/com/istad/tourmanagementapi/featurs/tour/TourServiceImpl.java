@@ -3,9 +3,11 @@ package com.istad.tourmanagementapi.featurs.tour;
 import com.istad.tourmanagementapi.featurs.destination.DestinationRepository;
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
 import com.istad.tourmanagementapi.featurs.tour.dto.TourRequest;
+
 import com.istad.tourmanagementapi.featurs.tour.dto.TourResponse;
 import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
 import com.istad.tourmanagementapi.featurs.tour.mapper.TourMapper;
+import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,10 +26,17 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public TourResponse create(TourRequest request) {
+
         Tour tour = tourMapper.toEntity(request);
+
         tour.setIsDeleted(false);
-        tour.setDestination(getDestinationById(request.destinationId()));
-        return tourMapper.toResponse(tourRepository.save(tour));
+        tour.setDestination(
+                getDestinationById(request.destinationId())
+        );
+
+        return tourMapper.toResponse(
+                tourRepository.save(tour)
+        );
     }
 
     @Override
@@ -36,59 +45,105 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
-    public Page<TourResponse> findAll(int page, int size) {
+    public PageResponse<TourResponse> findAll(
+            int page,
+            int size
+    ) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return tourRepository.findByIsDeletedFalse(pageable)
-                .map(tourMapper::toResponse);
+        Page<TourResponse> tours =
+                tourRepository
+                        .findByIsDeletedFalse(pageable)
+                        .map(tourMapper::toResponse);
+
+        return PageResponse.<TourResponse>builder()
+                .items(tours.getContent())
+                .size(tours.getSize())
+                .pageNumber(tours.getNumber())
+                .totalElements(tours.getTotalElements())
+                .totalPages(tours.getTotalPages())
+                .build();
     }
 
     @Override
-    public Page<TourResponse> search(String title, int page, int size) {
+    public PageResponse<TourResponse> search(
+            String title,
+            int page,
+            int size
+    ) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return tourRepository
-                .findByIsDeletedFalseAndTitleContainingIgnoreCase(
-                        title,
-                        pageable
-                )
-                .map(tourMapper::toResponse);
+        Page<TourResponse> tours =
+                tourRepository
+                        .findByIsDeletedFalseAndTitleContainingIgnoreCase(
+                                title,
+                                pageable
+                        )
+                        .map(tourMapper::toResponse);
+
+        return PageResponse.<TourResponse>builder()
+                .items(tours.getContent())
+                .size(tours.getSize())
+                .pageNumber(tours.getNumber())
+                .totalElements(tours.getTotalElements())
+                .totalPages(tours.getTotalPages())
+                .build();
     }
 
-
-
     @Override
-    public TourResponse update(Long id, TourRequest request) {
+    public TourResponse update(
+            Long id,
+            TourRequest request
+    ) {
+
         Tour tour = getById(id);
+
         tourMapper.updateEntity(request, tour);
+
         if (request.destinationId() != null) {
-            tour.setDestination(getDestinationById(request.destinationId()));
+            tour.setDestination(
+                    getDestinationById(request.destinationId())
+            );
         }
-        return tourMapper.toResponse(tourRepository.save(tour));
+
+        return tourMapper.toResponse(
+                tourRepository.save(tour)
+        );
     }
 
     @Override
     public void delete(Long id) {
+
         Tour tour = getById(id);
+
         tour.setIsDeleted(true);
+
         tourRepository.save(tour);
     }
 
     private Tour getById(Long id) {
-        return tourRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Tour not found with id: " + id
-                ));
+
+        return tourRepository
+                .findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Tour not found with id: " + id
+                        )
+                );
     }
 
-
-
     private Destination getDestinationById(Long id) {
-        return destinationRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Destination not found with id: " + id));
+
+        return destinationRepository
+                .findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Destination not found with id: " + id
+                        )
+                );
     }
 }

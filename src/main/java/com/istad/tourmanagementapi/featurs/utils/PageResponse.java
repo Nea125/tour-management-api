@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+
 @Data // use this data annotation to create
 /*
  * @Getter
@@ -16,6 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageResponse<T> {
+    private List<T> items;
     private int size;
     private int pageNumber;
     private long totalElements;

@@ -6,8 +6,8 @@ import java.time.LocalDate;
 
 public record BookingRequest(
         String bookingCode,
-        Long userId,
-        Long scheduleId,
+        String userId,
+        String scheduleId,
         Integer numberOfPeople,
         LocalDate bookingDate,
         BookingStatus status,

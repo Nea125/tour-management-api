@@ -1,12 +1,11 @@
 package com.istad.tourmanagementapi.featurs.booking.entity;
 
 import com.istad.tourmanagementapi.featurs.enums.BookingStatus;
-import com.istad.tourmanagementapi.featurs.schedule.entity.Schedule;
-import com.istad.tourmanagementapi.featurs.user.entity.User;
+import com.istad.tourmanagementapi.featurs.tour_schedule.entity.TourSchedule;
+import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -54,10 +53,10 @@ public class Booking {
  // Relationships with user [Many to one: One booking has one user]
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserProfile user;
 
     // Relationships with tourSchedule [Many to one: One booking has one tourSchedule]
     @ManyToOne
     @JoinColumn(name = "tour_schedule_id", nullable = false)
-    private Schedule schedule;
+    private TourSchedule schedule;
 }

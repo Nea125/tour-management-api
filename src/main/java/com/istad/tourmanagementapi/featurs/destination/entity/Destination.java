@@ -1,6 +1,7 @@
 package com.istad.tourmanagementapi.featurs.destination.entity;
 
 import com.istad.tourmanagementapi.featurs.enums.DestinationStatus;
+import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,10 @@ public class Destination {
 
     @NotNull
     Long latitude;
+
+
+    @OneToMany(mappedBy = "destination")
+    private List<Tour> tours;
 
     @NotNull
     Long longitude;

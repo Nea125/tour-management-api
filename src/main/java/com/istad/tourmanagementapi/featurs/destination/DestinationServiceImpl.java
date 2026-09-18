@@ -4,6 +4,7 @@ import com.istad.tourmanagementapi.featurs.destination.dto.DestinationRequest;
 import com.istad.tourmanagementapi.featurs.destination.dto.DestinationResponse;
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
 import com.istad.tourmanagementapi.featurs.destination.mapper.DestinationMapper;
+import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,50 +22,103 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     public DestinationResponse create(DestinationRequest request) {
+
         if (destinationRepository.existsByNameIgnoreCase(request.name())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Destination already exists with name: " + request.name());
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Destination already exists with name: " + request.name()
+            );
         }
+
         Destination destination = destinationMapper.toEntity(request);
         destination.setDeleted(false);
-        return destinationMapper.toResponse(destinationRepository.save(destination));
+
+        return destinationMapper.toResponse(
+                destinationRepository.save(destination)
+        );
     }
 
     @Override
     public DestinationResponse findById(Long id) {
-
         return destinationMapper.toResponse(getById(id));
     }
 
     @Override
-    public Page<DestinationResponse> findAll(int page, int size) {
+    public PageResponse<DestinationResponse> findAll(int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size);
-        return destinationRepository.findByIsDeletedFalse(pageable).map(destinationMapper::toResponse);
+
+        Page<DestinationResponse> destinations =
+                destinationRepository
+                        .findByIsDeletedFalse(pageable)
+                        .map(destinationMapper::toResponse);
+
+        return PageResponse.<DestinationResponse>builder()
+                .items(destinations.getContent())
+                .size(destinations.getSize())
+                .pageNumber(destinations.getNumber())
+                .totalElements(destinations.getTotalElements())
+                .totalPages(destinations.getTotalPages())
+                .build();
     }
 
     @Override
-    public Page<DestinationResponse> search(String title, int page, int size) {
-       return  destinationRepository.findByIsDeletedFalseAndNameContainingIgnoreCase(title, PageRequest.of(page, size))
-                .map(destinationMapper::toResponse);
+    public PageResponse<DestinationResponse> search(
+            String name,
+            int page,
+            int size
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<DestinationResponse> destinations =
+                destinationRepository
+                        .findByIsDeletedFalseAndNameContainingIgnoreCase(
+                                name,
+                                pageable
+                        )
+                        .map(destinationMapper::toResponse);
+
+        return PageResponse.<DestinationResponse>builder()
+                .items(destinations.getContent())
+                .size(destinations.getSize())
+                .pageNumber(destinations.getNumber())
+                .totalElements(destinations.getTotalElements())
+                .totalPages(destinations.getTotalPages())
+                .build();
     }
 
     @Override
-    public DestinationResponse update(Long id, DestinationRequest request) {
+    public DestinationResponse update(
+            Long id,
+            DestinationRequest request
+    ) {
         Destination destination = getById(id);
+
         destinationMapper.updateEntity(request, destination);
-        return destinationMapper.toResponse(destinationRepository.save(destination));
+
+        return destinationMapper.toResponse(
+                destinationRepository.save(destination)
+        );
     }
 
     @Override
     public void delete(Long id) {
         Destination destination = getById(id);
+
         destination.setDeleted(true);
+
         destinationRepository.save(destination);
     }
 
     private Destination getById(Long id) {
-        return destinationRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Destination not found with id: " + id));
+        return destinationRepository
+                .findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Destination not found with id: " + id
+                        )
+                );
     }
 }
