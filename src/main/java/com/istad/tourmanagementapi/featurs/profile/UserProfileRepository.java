@@ -1,6 +1,5 @@
 package com.istad.tourmanagementapi.featurs.profile;
 
-import com.istad.tourmanagementapi.featurs.enums.UserStatus;
 import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,13 +12,11 @@ public interface UserProfileRepository
 
     boolean existsByEmail(String email);
 
-    Optional<UserProfile> findByIdAndStatus(
-            String id,
-            UserStatus status
+    Optional<UserProfile> findByIdAndIsDeletedFalse(
+            String id
     );
 
-    Page<UserProfile> findAllByStatus(
-            UserStatus status,
+    Page<UserProfile> findAllByIsDeletedFalse(
             Pageable pageable
     );
 }

@@ -8,16 +8,9 @@ import java.util.List;
 
 public interface MediaService {
 
-    MediaResponse uploadMedia(MultipartFile file);
-
-    List<MediaResponse> uploadMedia(List<MultipartFile> files);
-
     List<Media> uploadMediaEntities(List<MultipartFile> files);
     Resource getMediaResource(Integer mediaId);
-    MediaResponse getMediaResponse(Media media);
-    MediaResponse updateMedia(
-            Integer mediaId,
-            MultipartFile image
-    );
-
+    MediaResponse updateMedia(Integer mediaId, MultipartFile image);
+    Media uploadMediaEntity(MultipartFile file);
+    String getMediaUri(Media media);
 }

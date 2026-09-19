@@ -29,8 +29,6 @@ public class Booking {
     @Column(name = "booking_code", nullable = false, unique = true)
     private String bookingCode;
 
-
-
     @NotNull
     @Positive
     @Column(name = "number_of_people", nullable = false)
@@ -45,10 +43,6 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status;
-
-    @Column(name = "special_request", columnDefinition = "TEXT")
-    private String specialRequest;
-
 
  // Relationships with user [Many to one: One booking has one user]
     @ManyToOne

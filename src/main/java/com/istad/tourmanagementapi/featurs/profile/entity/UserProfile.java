@@ -2,6 +2,7 @@ package com.istad.tourmanagementapi.featurs.profile.entity;
 
 import com.istad.tourmanagementapi.featurs.booking.entity.Booking;
 import com.istad.tourmanagementapi.featurs.enums.UserStatus;
+import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.tour_guide.entity.TourGuide;
 import com.istad.tourmanagementapi.featurs.review.entity.Review;
 import jakarta.persistence.*;
@@ -40,16 +41,19 @@ public class UserProfile {
     @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "phone must be a valid number")
     private String phone;
 
-    @Column(name = "profile_image")
-    private String profileImage;
+    @OneToOne
+    @JoinColumn(name = "profile_image_id")
+    private Media profileImage;
 
     private String gender;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
-
+    boolean isDeleted;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+
+
     private UserStatus status;
 
     //Relationship with guide [One user can have one guide or null]

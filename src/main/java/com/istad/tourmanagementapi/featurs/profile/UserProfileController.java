@@ -1,5 +1,7 @@
 package com.istad.tourmanagementapi.featurs.profile;
 
+
+import com.istad.tourmanagementapi.featurs.profile.dto.CreateUserProfileRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.PatchUserProfileRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.UserProfileResponse;
 import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
@@ -7,7 +9,9 @@ import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -15,15 +19,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserProfileController {
 
     private final UserProfileService userService;
+    private final UserProfileService userProfileService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<UserProfileResponse> create(
-            @Valid @RequestBody PatchUserProfileRequest request
+            @Valid @RequestBody CreateUserProfileRequest request
     ) {
         return ApiResponse.<UserProfileResponse>builder()
                 .status(1)
-                .message("User created successfully")
+                .message("User registered successfully")
                 .data(userService.create(request))
                 .build();
     }
@@ -44,7 +49,6 @@ public class UserProfileController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-
         PageResponse<UserProfileResponse> users =
                 userService.findAll(page, size);
 
@@ -59,14 +63,14 @@ public class UserProfileController {
                 .build();
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ApiResponse<UserProfileResponse> update(
             @PathVariable String id,
             @Valid @RequestBody PatchUserProfileRequest request
     ) {
         return ApiResponse.<UserProfileResponse>builder()
                 .status(1)
-                .message("User updated successfully")
+                .message("User profile updated successfully")
                 .data(userService.update(id, request))
                 .build();
     }
@@ -80,6 +84,21 @@ public class UserProfileController {
         return ApiResponse.<Void>builder()
                 .status(1)
                 .message("User deleted successfully")
+                .build();
+    }
+
+    @PatchMapping(
+            value = "/{id}/image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ApiResponse<UserProfileResponse> updateProfileImage(
+            @PathVariable String id,
+            @RequestPart("image") MultipartFile image
+    ) {
+        return ApiResponse.<UserProfileResponse>builder()
+                .status(1)
+                .message("Profile image updated successfully")
+                .data(userProfileService.updateProfileImage(id, image))
                 .build();
     }
 }

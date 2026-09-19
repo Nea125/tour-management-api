@@ -37,24 +37,24 @@ public class MediaServiceImpl implements MediaService {
 
     private static final String MB = "MB";
 
-    @Override
-    @Transactional
-    public MediaResponse uploadMedia(MultipartFile file) {
-
-        Media media = uploadMediaEntity(file);
-
-        return buildMediaResponse(media);
-    }
-
-    @Override
-    @Transactional
-    public List<MediaResponse> uploadMedia(List<MultipartFile> files) {
-
-        return files.stream()
-                .map(this::uploadMediaEntity)
-                .map(this::buildMediaResponse)
-                .toList();
-    }
+//    @Override
+//    @Transactional
+//    public MediaResponse uploadMedia(MultipartFile file) {
+//
+//        Media media = uploadMediaEntity(file);
+//
+//        return buildMediaResponse(media);
+//    }
+//
+//    @Override
+//    @Transactional
+//    public List<MediaResponse> uploadMedia(List<MultipartFile> files) {
+//
+//        return files.stream()
+//                .map(this::uploadMediaEntity)
+//                .map(this::buildMediaResponse)
+//                .toList();
+//    }
 
     @Override
     @Transactional
@@ -65,7 +65,7 @@ public class MediaServiceImpl implements MediaService {
                 .toList();
     }
 
-    private Media uploadMediaEntity(MultipartFile file) {
+    public Media uploadMediaEntity(MultipartFile file) {
 
         if (file == null || file.isEmpty()) {
             throw new ResponseStatusException(
@@ -162,10 +162,6 @@ public class MediaServiceImpl implements MediaService {
     }
 
 
-    @Override
-    public MediaResponse getMediaResponse(Media media) {
-        return buildMediaResponse(media);
-    }
 
     private MediaResponse buildMediaResponse(Media media) {
 
@@ -265,6 +261,20 @@ public class MediaServiceImpl implements MediaService {
 
 
     private String buildMediaUri(Media media) {
+
+        return mediaBaseUri
+                + mediaClientPath
+                + "/"
+                + media.getName()
+                + "."
+                + media.getExtension();
+    }
+    @Override
+    public String getMediaUri(Media media) {
+
+        if (media == null) {
+            return null;
+        }
 
         return mediaBaseUri
                 + mediaClientPath

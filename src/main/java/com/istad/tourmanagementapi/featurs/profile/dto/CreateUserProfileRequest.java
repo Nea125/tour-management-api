@@ -1,18 +1,30 @@
 package com.istad.tourmanagementapi.featurs.profile.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
-public record PatchUserProfileRequest(
+public record CreateUserProfileRequest(
+        @NotBlank
+        String userName,
 
+        @NotBlank
+        String password,
+
+        @NotBlank
+        String confirmPassword,
+
+        @NotBlank
         String firstName,
 
+        @NotBlank
         String lastName,
 
         @Email
+        @NotBlank
         String email,
 
         @Pattern(
@@ -21,11 +33,8 @@ public record PatchUserProfileRequest(
         )
         String phone,
 
-        String profileImage,
-
         String gender,
 
         @Past
         LocalDate dateOfBirth
-) {
-}
+) {}
