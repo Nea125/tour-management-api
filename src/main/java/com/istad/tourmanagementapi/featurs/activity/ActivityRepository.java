@@ -11,4 +11,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     Page<Activity> findByIsDeletedFalse(Pageable pageable);
 
     Optional<Activity> findByIdAndIsDeletedFalse(Long id);
+
+    Page<Activity> findByTourIdAndIsDeletedFalse(
+            Long tourId,
+            Pageable pageable
+    );
 }

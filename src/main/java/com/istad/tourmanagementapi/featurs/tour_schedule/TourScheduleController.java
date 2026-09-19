@@ -1,6 +1,7 @@
 package com.istad.tourmanagementapi.featurs.tour_schedule;
 
 import com.istad.tourmanagementapi.featurs.enums.TourScheduleStatus;
+import com.istad.tourmanagementapi.featurs.tour_guide.dto.TourGuideResponse;
 import com.istad.tourmanagementapi.featurs.tour_schedule.dto.CreateTourScheduleRequest;
 import com.istad.tourmanagementapi.featurs.tour_schedule.dto.PatchTourScheduleRequest;
 import com.istad.tourmanagementapi.featurs.tour_schedule.dto.TourScheduleResponse;
@@ -10,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tour-schedule")
@@ -158,6 +161,37 @@ public class TourScheduleController {
         return ApiResponse.<Void>builder()
                 .status(1)
                 .message("Guide unassigned successfully")
+                .build();
+    }
+
+    @GetMapping("/tour/{tourId}")
+    public ApiResponse<PageResponse<TourScheduleResponse>> findByTourId(
+            @PathVariable Long tourId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        return ApiResponse.<PageResponse<TourScheduleResponse>>builder()
+                .status(1)
+                .message("Schedules retrieved successfully")
+                .data(
+                        scheduleService.findByTourId(
+                                tourId,
+                                page,
+                                size
+                        )
+                )
+                .build();
+    }
+// Find guides by schedule ID
+    @GetMapping("/{scheduleId}/guides")
+    public ApiResponse<List<TourGuideResponse>> findGuidesByScheduleId(
+            @PathVariable String scheduleId
+    ) {
+        return ApiResponse.<List<TourGuideResponse>>builder()
+                .status(1)
+                .message("Tour guides retrieved successfully")
+                .data(scheduleService.findGuidesByScheduleId(scheduleId))
                 .build();
     }
 }

@@ -146,4 +146,33 @@ public class TourServiceImpl implements TourService {
                         )
                 );
     }
+
+    @Override
+    public PageResponse<TourResponse> findByDestinationId(
+            Long destinationId,
+            int page,
+            int size
+    ) {
+
+        // Make sure destination exists
+        getDestinationById(destinationId);
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<TourResponse> tours =
+                tourRepository
+                        .findByDestinationIdAndIsDeletedFalse(
+                                destinationId,
+                                pageable
+                        )
+                        .map(tourMapper::toResponse);
+
+        return PageResponse.<TourResponse>builder()
+                .items(tours.getContent())
+                .size(tours.getSize())
+                .pageNumber(tours.getNumber())
+                .totalElements(tours.getTotalElements())
+                .totalPages(tours.getTotalPages())
+                .build();
+    }
 }

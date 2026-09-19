@@ -2,12 +2,16 @@ package com.istad.tourmanagementapi.featurs.tour_guide;
 
 import com.istad.tourmanagementapi.featurs.enums.TourGuideStatus;
 import com.istad.tourmanagementapi.featurs.profile.UserProfileRepository;
+import com.istad.tourmanagementapi.featurs.profile.dto.UserProfileResponse;
 import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
+import com.istad.tourmanagementapi.featurs.profile.mapper.UserProfileMapper;
 import com.istad.tourmanagementapi.featurs.tour_guide.dto.PatchTourGuideRequest;
 import com.istad.tourmanagementapi.featurs.tour_guide.dto.TourGuideRequest;
 import com.istad.tourmanagementapi.featurs.tour_guide.dto.TourGuideResponse;
 import com.istad.tourmanagementapi.featurs.tour_guide.entity.TourGuide;
 import com.istad.tourmanagementapi.featurs.tour_guide.mapper.TourGuideMapper;
+import com.istad.tourmanagementapi.featurs.tour_schedule.dto.TourScheduleResponse;
+import com.istad.tourmanagementapi.featurs.tour_schedule.mapper.TourScheduleMapper;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,11 +32,13 @@ public class TourGuideServiceImpl implements TourGuideService {
     private final TourGuideRepository tourGuideRepository;
     private final UserProfileRepository userProfileRepository;
     private final TourGuideMapper tourGuideMapper;
+    private final UserProfileMapper userProfileMapper;
+    private final TourScheduleMapper tourScheduleMapper;
 
     // CREATE
     @Override
     public TourGuideResponse create(TourGuideRequest request) {
-
+    // Check if license number already exists
         if (tourGuideRepository
                 .existsByLicenseNumber(request.licenseNumber())) {
 
@@ -39,7 +47,7 @@ public class TourGuideServiceImpl implements TourGuideService {
                     "License number already exists"
             );
         }
-
+// find and check user
         UserProfile user =
                 userProfileRepository
                         .findById(request.userId())
@@ -49,7 +57,7 @@ public class TourGuideServiceImpl implements TourGuideService {
                                         "User profile not found"
                                 )
                         );
-
+// Check whether this user already belongs to another tour guide
         if (tourGuideRepository
                 .existsByUser_Id(request.userId())) {
 
@@ -210,5 +218,57 @@ public class TourGuideServiceImpl implements TourGuideService {
         tourGuide.setStatus(TourGuideStatus.INACTIVE);
 
         tourGuideRepository.save(tourGuide);
+    }
+// Find user by tour guide id
+    @Override
+    @Transactional
+    public UserProfileResponse findUserByGuideId(Long guideId) {
+
+        TourGuide guide = tourGuideRepository
+                .findByIdAndStatus(
+                        guideId,
+                        TourGuideStatus.ACTIVE
+                )
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Active tour guide not found"
+                        )
+                );
+
+        if (guide.getUser() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User profile not found"
+            );
+        }
+
+        return userProfileMapper.toResponse(
+                guide.getUser()
+        );
+    }
+ // Find schedules by tour guide id
+    @Override
+    @Transactional
+    public List<TourScheduleResponse> findSchedulesByGuideId(
+            Long guideId
+    ) {
+
+        TourGuide guide = tourGuideRepository
+                .findByIdAndStatus(
+                        guideId,
+                        TourGuideStatus.ACTIVE
+                )
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Active tour guide not found"
+                        )
+                );
+
+        return guide.getSchedules()
+                .stream()
+                .map(tourScheduleMapper::toResponse)
+                .toList();
     }
 }

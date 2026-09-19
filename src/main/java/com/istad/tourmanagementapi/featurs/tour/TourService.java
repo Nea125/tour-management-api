@@ -21,4 +21,10 @@ public interface TourService {
     TourResponse update(Long id, TourRequest request);
 
     void delete(Long id);
+
+    PageResponse<TourResponse> findByDestinationId(
+            Long destinationId,
+            int page,
+            int size
+    );
 }

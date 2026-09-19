@@ -18,4 +18,8 @@ public interface TourRepository
             String title,
             Pageable pageable
     );
+    Page<Tour> findByDestinationIdAndIsDeletedFalse(
+            Long destinationId,
+            Pageable pageable
+    );
 }

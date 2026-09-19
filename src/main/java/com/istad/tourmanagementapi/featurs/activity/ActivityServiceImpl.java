@@ -112,4 +112,33 @@ public class ActivityServiceImpl implements ActivityService {
                         "Tour not found with id: " + id
                 ));
     }
+
+    @Override
+    public PageResponse<ActivityResponse> findByTourId(
+            Long tourId,
+            int page,
+            int size
+    ) {
+
+        // Make sure the tour exists
+        getTourById(tourId);
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<ActivityResponse> activities =
+                activityRepository
+                        .findByTourIdAndIsDeletedFalse(
+                                tourId,
+                                pageable
+                        )
+                        .map(activityMapper::toResponse);
+
+        return PageResponse.<ActivityResponse>builder()
+                .items(activities.getContent())
+                .size(activities.getSize())
+                .pageNumber(activities.getNumber())
+                .totalElements(activities.getTotalElements())
+                .totalPages(activities.getTotalPages())
+                .build();
+    }
 }

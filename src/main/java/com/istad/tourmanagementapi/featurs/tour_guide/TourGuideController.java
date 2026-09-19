@@ -1,14 +1,18 @@
 package com.istad.tourmanagementapi.featurs.tour_guide;
 
+import com.istad.tourmanagementapi.featurs.profile.dto.UserProfileResponse;
 import com.istad.tourmanagementapi.featurs.tour_guide.dto.PatchTourGuideRequest;
 import com.istad.tourmanagementapi.featurs.tour_guide.dto.TourGuideRequest;
 import com.istad.tourmanagementapi.featurs.tour_guide.dto.TourGuideResponse;
+import com.istad.tourmanagementapi.featurs.tour_schedule.dto.TourScheduleResponse;
 import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tour-guide")
@@ -81,6 +85,28 @@ public class TourGuideController {
         return ApiResponse.<Void>builder()
                 .status(1)
                 .message("Guide deleted successfully")
+                .build();
+    }
+
+    @GetMapping("/{id}/user")
+    public ApiResponse<UserProfileResponse> findUserByGuideId(
+            @PathVariable Long id
+    ) {
+        return ApiResponse.<UserProfileResponse>builder()
+                .status(1)
+                .message("User retrieved successfully")
+                .data(guideService.findUserByGuideId(id))
+                .build();
+    }
+
+    @GetMapping("/{id}/schedules")
+    public ApiResponse<List<TourScheduleResponse>> findSchedulesByGuideId(
+            @PathVariable Long id
+    ) {
+        return ApiResponse.<List<TourScheduleResponse>>builder()
+                .status(1)
+                .message("Schedules retrieved successfully")
+                .data(guideService.findSchedulesByGuideId(id))
                 .build();
     }
 }

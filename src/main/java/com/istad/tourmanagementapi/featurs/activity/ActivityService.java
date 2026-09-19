@@ -15,4 +15,10 @@ public interface ActivityService {
     ActivityResponse update(Long id, ActivityRequest request);
 
     void delete(Long id);
+
+    PageResponse<ActivityResponse> findByTourId(
+            Long tourId,
+            int page,
+            int size
+    );
 }

@@ -1,6 +1,7 @@
 package com.istad.tourmanagementapi.featurs.destination.entity;
 
-import com.istad.tourmanagementapi.featurs.enums.DestinationStatus;
+
+import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -43,9 +45,14 @@ public class Destination {
     @Column(nullable = false)
     private String country;
 
-    @Column(nullable = false,name = "image_url")
-    List<String> imageUrl;
-
+    @ManyToMany
+    @JoinTable(
+            name = "destination_medias",
+            joinColumns = @JoinColumn(name = "destination_id"),
+            inverseJoinColumns = @JoinColumn(name = "media_id")
+    )
+    private List<Media> media;
+//    private List<Media> media = new ArrayList<>();
     @NotNull
     Long latitude;
 
@@ -53,8 +60,9 @@ public class Destination {
     @OneToMany(mappedBy = "destination")
     private List<Tour> tours;
 
-    @NotNull
-    Long longitude;
 
+
+    @NotNull(message = "Longitude is required")
+    Double longitude;
     boolean isDeleted;
 }

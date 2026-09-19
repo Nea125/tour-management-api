@@ -103,4 +103,29 @@ public class TourController {
                 .message("Tour deleted successfully")
                 .build();
     }
+
+    @GetMapping("/destination/{destinationId}")
+    public ApiResponse<PageResponse<TourResponse>> findByDestinationId(
+            @PathVariable Long destinationId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        PageResponse<TourResponse> tours =
+                tourService.findByDestinationId(
+                        destinationId,
+                        page,
+                        size
+                );
+
+        String message = tours.getItems().isEmpty()
+                ? "No tours found for this destination"
+                : "Tours retrieved successfully";
+
+        return ApiResponse.<PageResponse<TourResponse>>builder()
+                .status(1)
+                .message(message)
+                .data(tours)
+                .build();
+    }
 }

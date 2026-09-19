@@ -93,4 +93,24 @@ public class ActivityController {
                 .message("Activity deleted successfully")
                 .build();
     }
+
+    @GetMapping("/tour/{tourId}")
+    public ApiResponse<PageResponse<ActivityResponse>> findByTourId(
+            @PathVariable Long tourId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        return ApiResponse.<PageResponse<ActivityResponse>>builder()
+                .status(1)
+                .message("Activities retrieved successfully")
+                .data(
+                        activityService.findByTourId(
+                                tourId,
+                                page,
+                                size
+                        )
+                )
+                .build();
+    }
 }
