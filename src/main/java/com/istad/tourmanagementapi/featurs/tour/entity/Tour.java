@@ -2,6 +2,7 @@ package com.istad.tourmanagementapi.featurs.tour.entity;
 
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
 import com.istad.tourmanagementapi.featurs.activity.entity.Activity;
+import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.review.entity.Review;
 import com.istad.tourmanagementapi.featurs.tour_schedule.entity.TourSchedule;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -50,8 +52,13 @@ public class Tour {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "image_url")
-    private List<String> images;
+    @ManyToMany
+    @JoinTable(
+            name = "tour_medias",
+            joinColumns = @JoinColumn(name = "tour_id"),
+            inverseJoinColumns = @JoinColumn(name = "media_id")
+    )
+    private List<Media> media = new ArrayList<>();
 
     @Column(name = "is_deleted", nullable = false)
     Boolean isDeleted;
