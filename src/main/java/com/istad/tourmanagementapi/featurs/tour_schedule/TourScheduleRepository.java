@@ -1,29 +1,21 @@
 package com.istad.tourmanagementapi.featurs.tour_schedule;
-
-
 import com.istad.tourmanagementapi.featurs.enums.TourScheduleStatus;
 import com.istad.tourmanagementapi.featurs.tour_guide.entity.TourGuide;
-import com.istad.tourmanagementapi.featurs.tour_schedule.dto.TourScheduleResponse;
 import com.istad.tourmanagementapi.featurs.tour_schedule.entity.TourSchedule;
-import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface TourScheduleRepository
-        extends JpaRepository<TourSchedule, String> {
+public interface TourScheduleRepository extends JpaRepository<TourSchedule, Long> {
 
-    Optional<TourSchedule> findByIdAndIsDeletedFalse(String id);
+    Optional<TourSchedule> findByIdAndIsDeletedFalse(Long id);
 
     Page<TourSchedule> findAllByIsDeletedFalse(Pageable pageable);
-
-
 
     Page<TourSchedule> findAllByStatusAndIsDeletedFalse(
             TourScheduleStatus status,
@@ -43,7 +35,7 @@ public interface TourScheduleRepository
 """)
     boolean existsGuideScheduleConflict(
             @Param("guideId") Long guideId,
-            @Param("scheduleId") String scheduleId,
+            @Param("scheduleId") Long scheduleId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
@@ -61,7 +53,29 @@ public interface TourScheduleRepository
           AND s.isDeleted = false
     """)
   List<TourGuide> findGuidesByScheduleId(
-          @Param("scheduleId") String scheduleId
+          @Param("scheduleId") Long scheduleId
   );
+
+    @Query("""
+    SELECT COUNT(s)
+    FROM TourSchedule s
+    WHERE s.isDeleted = false
+      AND s.startDate >= :today
+      AND s.startDate <= :fiveDaysLater
+""")
+    Long countUpcomingTours(
+            @Param("today") LocalDate today,
+            @Param("fiveDaysLater") LocalDate fiveDaysLater
+    );
+
+    @Query("""
+    SELECT COUNT(s)
+    FROM TourSchedule s
+    WHERE s.isDeleted = false
+      AND s.status = :status
+""")
+    Long countToursByStatus(
+            @Param("status") TourScheduleStatus status
+    );
 
 }

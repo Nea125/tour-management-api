@@ -11,6 +11,7 @@ public record TourScheduleResponse(
         LocalDate startDate,
         LocalDate endDate,
         Integer capacity,
+        Integer availableCapacity,
         TourScheduleStatus status,
         boolean isDeleted
 ) {

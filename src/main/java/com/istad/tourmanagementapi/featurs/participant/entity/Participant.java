@@ -1,9 +1,9 @@
-package com.istad.tourmanagementapi.featurs.booking.entity;
+package com.istad.tourmanagementapi.featurs.participant.entity;
 
+import com.istad.tourmanagementapi.featurs.booking.entity.Booking;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "participants")
-public class BookingParticipant {
+public class Participant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

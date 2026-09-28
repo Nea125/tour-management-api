@@ -1,6 +1,7 @@
 package com.istad.tourmanagementapi.featurs.profile.entity;
 
 import com.istad.tourmanagementapi.featurs.booking.entity.Booking;
+import com.istad.tourmanagementapi.featurs.enums.UserRole;
 import com.istad.tourmanagementapi.featurs.enums.UserStatus;
 import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.tour_guide.entity.TourGuide;
@@ -57,7 +58,7 @@ public class UserProfile {
     private UserStatus status;
 
     //Relationship with guide [One user can have one guide or null]
-    @OneToOne
+    @OneToOne(mappedBy = "user")
     TourGuide guide;
 
     // Relationship with Booking [One user can have many bookings]
@@ -67,4 +68,6 @@ public class UserProfile {
 // Relationship with Review [One user can have many reviews]
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
+
+    UserRole role;
 }

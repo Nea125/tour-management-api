@@ -43,7 +43,9 @@ public class TourGuide {
     @ManyToMany(mappedBy = "guides")
     private List<TourSchedule> schedules;
 
-    // Relationship with User [One guide has one user]
+    //Relationship with User [One guide has one user]
+    //TourGuide the owner.
+    //Because conceptually, TourGuide is an extension of a UserProfile
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserProfile user;

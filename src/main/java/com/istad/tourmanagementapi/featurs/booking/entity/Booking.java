@@ -5,11 +5,9 @@ import com.istad.tourmanagementapi.featurs.tour_schedule.entity.TourSchedule;
 import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
@@ -17,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "bookings")
 public class Booking {
 
@@ -38,6 +37,12 @@ public class Booking {
     @PastOrPresent
     @Column(name = "booking_date", nullable = false)
     private LocalDate bookingDate;
+
+
+    @NotNull
+    @Positive
+    @Column
+    private BigDecimal totalPrice;
 
     @NotNull
     @Enumerated(EnumType.STRING)

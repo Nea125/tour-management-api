@@ -1,8 +1,8 @@
-package com.istad.tourmanagementapi.featurs.booking.dto;
+package com.istad.tourmanagementapi.featurs.participant.dto;
 
 import java.time.LocalDate;
 
-public record BookingParticipantRequest(
+public record ParticipantRequest(
         Long bookingId,
         String fullName,
         String gender,

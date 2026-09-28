@@ -13,12 +13,12 @@ public interface TourScheduleService {
 
     TourScheduleResponse create(CreateTourScheduleRequest request);
 
-    TourScheduleResponse findById(String id);
+    TourScheduleResponse findById(Long id);
 
 
-    TourScheduleResponse update(String id, PatchTourScheduleRequest request);
+    TourScheduleResponse update(Long id, PatchTourScheduleRequest request);
 
-    void delete(String id);
+    void delete(Long id);
 
 
     PageResponse<TourScheduleResponse> findAll(
@@ -31,13 +31,13 @@ public interface TourScheduleService {
             int page,
             int size
     );
-    void assignGuide(String scheduleId, Long guideId);
+    void assignGuide(Long scheduleId, Long guideId);
 
-    void unassignGuide(String scheduleId, Long guideId);
+    void unassignGuide(Long scheduleId, Long guideId);
     PageResponse<TourScheduleResponse> findByTourId(
             Long tourId,
             int page,
             int size
     );
-    List<TourGuideResponse> findGuidesByScheduleId(String scheduleId);
+    List<TourGuideResponse> findGuidesByScheduleId(Long scheduleId);
 }

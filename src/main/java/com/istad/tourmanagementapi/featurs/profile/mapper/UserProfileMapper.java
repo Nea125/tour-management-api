@@ -28,10 +28,7 @@ public interface UserProfileMapper {
             UserProfile userProfile
     );
 
-    @Mapping(
-            target = "profileImage",
-            ignore = true
-    )
+
 // Ignore profileImage because it is updated separately
 // PatchUserProfileRequest -> [Source]
 // UserProfile -> [Target]

@@ -43,4 +43,11 @@ public interface DestinationRepository
             @Param("imageId") Integer imageId
     );
 
+    @Query("""
+    SELECT COUNT(d)
+    FROM Destination d
+    WHERE d.isDeleted = false
+""")
+    Long countTotalDestinations();
+
 }

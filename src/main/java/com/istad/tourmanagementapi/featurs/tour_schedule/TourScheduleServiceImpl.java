@@ -1,6 +1,9 @@
 package com.istad.tourmanagementapi.featurs.tour_schedule;
+import com.istad.tourmanagementapi.featurs.booking.BookingRepository;
 import com.istad.tourmanagementapi.featurs.enums.TourGuideStatus;
 import com.istad.tourmanagementapi.featurs.enums.TourScheduleStatus;
+import com.istad.tourmanagementapi.featurs.tour.TourRepository;
+import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
 import com.istad.tourmanagementapi.featurs.tour_guide.TourGuideRepository;
 import com.istad.tourmanagementapi.featurs.tour_guide.dto.TourGuideResponse;
 import com.istad.tourmanagementapi.featurs.tour_guide.entity.TourGuide;
@@ -9,8 +12,6 @@ import com.istad.tourmanagementapi.featurs.tour_schedule.dto.CreateTourScheduleR
 import com.istad.tourmanagementapi.featurs.tour_schedule.dto.PatchTourScheduleRequest;
 import com.istad.tourmanagementapi.featurs.tour_schedule.dto.TourScheduleResponse;
 import com.istad.tourmanagementapi.featurs.tour_schedule.entity.TourSchedule;
-import com.istad.tourmanagementapi.featurs.tour.TourRepository;
-import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
 import com.istad.tourmanagementapi.featurs.tour_schedule.mapper.TourScheduleMapper;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import jakarta.transaction.Transactional;
@@ -34,6 +35,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
     private final TourRepository tourRepository;
     private final TourGuideRepository tourGuideRepository;
     private final TourGuideMapper tourGuideMapper;
+    private final BookingRepository bookingRepository;
 
 
     // CREATE
@@ -47,11 +49,12 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         // Calculate the expected end date based on tour duration
         // startDate = 2026-09-20
         // durationDays = 3
-        // expectedEndDate = duration-1 =  2026-09-22
-        LocalDate expectedEndDate = request.startDate()
-                .plusDays(tour.getDurationDays() - 1);
+        // expectedEndDate = duration-1 = 2026-09-22
+        LocalDate expectedEndDate =
+                request.startDate()
+                        .plusDays(tour.getDurationDays() - 1);
 
-        // Check If the end date request is not equal the calculated date
+        // Validate end date
         if (!request.endDate().equals(expectedEndDate)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -73,16 +76,16 @@ public class TourScheduleServiceImpl implements TourScheduleService {
 
         schedule.setDeleted(false);
 
-        return scheduleMapper.toResponse(
-                scheduleRepository.save(schedule)
-        );
+        TourSchedule savedSchedule =
+                scheduleRepository.save(schedule);
+
+        return toResponse(savedSchedule);
     }
 
 
     // FIND BY ID
-    // Only return non-deleted schedule
     @Override
-    public TourScheduleResponse findById(String id) {
+    public TourScheduleResponse findById(Long id) {
 
         TourSchedule schedule =
                 scheduleRepository
@@ -94,25 +97,24 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                                 )
                         );
 
-        return scheduleMapper.toResponse(schedule);
+        return toResponse(schedule);
     }
 
 
     // FIND ALL
-    // Only return non-deleted schedules
     @Override
-
     public PageResponse<TourScheduleResponse> findAll(
             int page,
             int size
     ) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable =
+                PageRequest.of(page, size);
 
         Page<TourScheduleResponse> schedules =
                 scheduleRepository
                         .findAllByIsDeletedFalse(pageable)
-                        .map(scheduleMapper::toResponse);
+                        .map(this::toResponse);
 
         return PageResponse.<TourScheduleResponse>builder()
                 .items(schedules.getContent())
@@ -125,16 +127,15 @@ public class TourScheduleServiceImpl implements TourScheduleService {
 
 
     // UPDATE
-
     @Override
     public TourScheduleResponse update(
-            String id,
+            Long id,
             PatchTourScheduleRequest request
     ) {
 
         TourSchedule schedule = getById(id);
 
-        // Validate the final dates
+        // Validate final dates
         LocalDate startDate =
                 request.startDate() != null
                         ? request.startDate()
@@ -158,15 +159,16 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                 schedule
         );
 
-        return scheduleMapper.toResponse(
-                scheduleRepository.save(schedule)
-        );
+        TourSchedule updatedSchedule =
+                scheduleRepository.save(schedule);
+
+        return toResponse(updatedSchedule);
     }
 
 
     // DELETE - SOFT DELETE
     @Override
-    public void delete(String id) {
+    public void delete(Long id) {
 
         TourSchedule schedule =
                 getById(id);
@@ -177,9 +179,8 @@ public class TourScheduleServiceImpl implements TourScheduleService {
     }
 
 
-    // Get schedule by ID
-    // Used by UPDATE and DELETE
-    private TourSchedule getById(String id) {
+    // GET BY ID
+    private TourSchedule getById(Long id) {
 
         return scheduleRepository
                 .findById(id)
@@ -190,6 +191,9 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                         )
                 );
     }
+
+
+    // FIND BY STATUS
     @Override
     public PageResponse<TourScheduleResponse> findByStatus(
             TourScheduleStatus status,
@@ -197,7 +201,8 @@ public class TourScheduleServiceImpl implements TourScheduleService {
             int size
     ) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable =
+                PageRequest.of(page, size);
 
         Page<TourScheduleResponse> schedules =
                 scheduleRepository
@@ -205,7 +210,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                                 status,
                                 pageable
                         )
-                        .map(scheduleMapper::toResponse);
+                        .map(this::toResponse);
 
         return PageResponse.<TourScheduleResponse>builder()
                 .items(schedules.getContent())
@@ -216,7 +221,8 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                 .build();
     }
 
-    // Get tour by ID
+
+    // GET TOUR BY ID
     private Tour getTourById(Long id) {
 
         return tourRepository
@@ -229,16 +235,17 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                 );
     }
 
+
+    // ASSIGN GUIDE
     @Override
     public void assignGuide(
-            String scheduleId,
+            Long scheduleId,
             Long guideId
     ) {
 
-        //  Find schedule
-        TourSchedule schedule = getById(scheduleId);
+        TourSchedule schedule =
+                getById(scheduleId);
 
-        // Find active guide
         TourGuide guide =
                 tourGuideRepository
                         .findByIdAndStatus(
@@ -253,7 +260,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                                 )
                         );
 
-        // Check if guide is already assigned
+        // Check if guide already assigned
         if (schedule.getGuides().contains(guide)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
@@ -261,7 +268,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
             );
         }
 
-        // 4. check if  guide is already assigned to another schedule at the same date range
+        // Check schedule conflict
         boolean conflict =
                 scheduleRepository.existsGuideScheduleConflict(
                         guideId,
@@ -277,23 +284,22 @@ public class TourScheduleServiceImpl implements TourScheduleService {
             );
         }
 
-        // 5. Assign guide
         schedule.getGuides().add(guide);
 
         scheduleRepository.save(schedule);
     }
 
-    //  Unassign guide from schedule
+
+    // UNASSIGN GUIDE
     @Override
     public void unassignGuide(
-            String scheduleId,
+            Long scheduleId,
             Long guideId
     ) {
 
-        // Find schedule
-        TourSchedule schedule = getById(scheduleId);
+        TourSchedule schedule =
+                getById(scheduleId);
 
-        //  Find guide
         TourGuide guide =
                 tourGuideRepository
                         .findById(guideId)
@@ -305,7 +311,6 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                                 )
                         );
 
-        // Check if guide is assigned
         if (!schedule.getGuides().contains(guide)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
@@ -313,12 +318,13 @@ public class TourScheduleServiceImpl implements TourScheduleService {
             );
         }
 
-        // Remove guide
         schedule.getGuides().remove(guide);
 
         scheduleRepository.save(schedule);
     }
 
+
+    // FIND BY TOUR ID
     @Override
     public PageResponse<TourScheduleResponse> findByTourId(
             Long tourId,
@@ -329,7 +335,8 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         // Check if tour exists
         getTourById(tourId);
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable =
+                PageRequest.of(page, size);
 
         Page<TourScheduleResponse> schedules =
                 scheduleRepository
@@ -337,7 +344,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                                 tourId,
                                 pageable
                         )
-                        .map(scheduleMapper::toResponse);
+                        .map(this::toResponse);
 
         return PageResponse.<TourScheduleResponse>builder()
                 .items(schedules.getContent())
@@ -348,10 +355,13 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                 .build();
     }
 
-// Find guides by schedule ID
+
+    // FIND GUIDES BY SCHEDULE ID
     @Override
     @Transactional
-    public List<TourGuideResponse> findGuidesByScheduleId(String scheduleId) {
+    public List<TourGuideResponse> findGuidesByScheduleId(
+            Long scheduleId
+    ) {
 
         getById(scheduleId);
 
@@ -360,5 +370,34 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                 .stream()
                 .map(tourGuideMapper::toResponse)
                 .toList();
+    }
+
+
+    // CONVERT SCHEDULE TO RESPONSE WITH AVAILABILITY
+    private TourScheduleResponse toResponse(
+            TourSchedule schedule
+    ) {
+
+        Integer bookedPeople =
+                bookingRepository.countConfirmedPeopleByScheduleId(
+                        schedule.getId()
+                );
+
+        Integer availableCapacity =
+                schedule.getCapacity() - bookedPeople;
+
+        TourScheduleResponse response =
+                scheduleMapper.toResponse(schedule);
+
+        return new TourScheduleResponse(
+                response.id(),
+                response.tourId(),
+                response.startDate(),
+                response.endDate(),
+                response.capacity(),
+                availableCapacity,
+                response.status(),
+                response.isDeleted()
+        );
     }
 }

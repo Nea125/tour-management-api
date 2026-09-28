@@ -1,4 +1,9 @@
 package com.istad.tourmanagementapi.featurs.report;
 
-public class ReportService {
+import com.istad.tourmanagementapi.featurs.report.dto.ReportResponse;
+
+public interface ReportService {
+
+    ReportResponse getReport();
+
 }

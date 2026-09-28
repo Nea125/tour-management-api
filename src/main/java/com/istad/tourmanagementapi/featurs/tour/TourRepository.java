@@ -38,4 +38,11 @@ public interface TourRepository
             @Param("tourId") Long tourId,
             @Param("imageId") Integer imageId
     );
+
+    @Query("""
+    SELECT COUNT(t)
+    FROM Tour t
+    WHERE t.isDeleted = false
+""")
+    Long countTotalTours();
 }

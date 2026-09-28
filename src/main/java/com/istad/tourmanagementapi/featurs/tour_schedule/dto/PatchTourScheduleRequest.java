@@ -1,5 +1,6 @@
 package com.istad.tourmanagementapi.featurs.tour_schedule.dto;
 
+import com.istad.tourmanagementapi.featurs.enums.TourScheduleStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -15,7 +16,8 @@ public record PatchTourScheduleRequest(
                 message = "Capacity must be at least 1"
         )
 
-        Integer capacity
+        Integer capacity,
+        TourScheduleStatus status
 
 
 

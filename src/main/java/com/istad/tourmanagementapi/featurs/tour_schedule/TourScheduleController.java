@@ -20,8 +20,6 @@ import java.util.List;
 public class TourScheduleController {
 
     private final TourScheduleService scheduleService;
-
-
     // CREATE
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -45,11 +43,7 @@ public class TourScheduleController {
     ) {
 
         PageResponse<TourScheduleResponse> schedules =
-                scheduleService.findByStatus(
-                        status,
-                        page,
-                        size
-                );
+                scheduleService.findByStatus(status, page, size);
 
         String message = schedules.getItems().isEmpty()
                 ? "No schedules found with status: " + status
@@ -66,7 +60,7 @@ public class TourScheduleController {
     // FIND BY ID
     @GetMapping("/{id}")
     public ApiResponse<TourScheduleResponse> findById(
-            @PathVariable String id
+            @PathVariable Long id
     ) {
         return ApiResponse.<TourScheduleResponse>builder()
                 .status(1)
@@ -101,7 +95,7 @@ public class TourScheduleController {
     // UPDATE
     @PatchMapping("/{id}")
     public ApiResponse<TourScheduleResponse> update(
-            @PathVariable String id,
+            @PathVariable Long id,
             @Valid @RequestBody PatchTourScheduleRequest request
     ) {
         return ApiResponse.<TourScheduleResponse>builder()
@@ -115,11 +109,9 @@ public class TourScheduleController {
     // SOFT DELETE
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(
-            @PathVariable String id
+            @PathVariable Long id
     ) {
-
         scheduleService.delete(id);
-
         return ApiResponse.<Void>builder()
                 .status(1)
                 .message("Schedule deleted successfully")
@@ -129,16 +121,10 @@ public class TourScheduleController {
 
     // ASSIGN GUIDE
     @PostMapping("/{scheduleId}/guides/{guideId}")
-    public ApiResponse<Void> assignGuide(
-            @PathVariable String scheduleId,
-            @PathVariable Long guideId
+    public ApiResponse<Void> assignGuide(@PathVariable Long scheduleId, @PathVariable Long guideId
     ) {
-
-        scheduleService.assignGuide(
-                scheduleId,
-                guideId
+        scheduleService.assignGuide(scheduleId, guideId
         );
-
         return ApiResponse.<Void>builder()
                 .status(1)
                 .message("Guide assigned successfully")
@@ -149,7 +135,7 @@ public class TourScheduleController {
     // UNASSIGN GUIDE
     @DeleteMapping("/{scheduleId}/guides/{guideId}")
     public ApiResponse<Void> unassignGuide(
-            @PathVariable String scheduleId,
+            @PathVariable Long scheduleId,
             @PathVariable Long guideId
     ) {
 
@@ -174,19 +160,13 @@ public class TourScheduleController {
         return ApiResponse.<PageResponse<TourScheduleResponse>>builder()
                 .status(1)
                 .message("Schedules retrieved successfully")
-                .data(
-                        scheduleService.findByTourId(
-                                tourId,
-                                page,
-                                size
-                        )
-                )
+                .data(scheduleService.findByTourId(tourId, page, size))
                 .build();
     }
 // Find guides by schedule ID
     @GetMapping("/{scheduleId}/guides")
     public ApiResponse<List<TourGuideResponse>> findGuidesByScheduleId(
-            @PathVariable String scheduleId
+            @PathVariable Long scheduleId
     ) {
         return ApiResponse.<List<TourGuideResponse>>builder()
                 .status(1)
