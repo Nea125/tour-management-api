@@ -61,11 +61,9 @@ public class BookingServiceImpl implements BookingService {
                         );
 
         //  Create booking
-        Booking booking = Booking.builder().bookingCode(
-                                generateBookingCode()).user(user).schedule(schedule)
-                        .numberOfPeople(
-                                request.numberOfPeople()
-                        )
+        Booking booking = Booking.builder().bookingCode(generateBookingCode())
+                .user(user).schedule(schedule)
+                        .numberOfPeople(request.numberOfPeople())
                         .totalPrice(totalPrice)
                         .bookingDate(LocalDate.now()
                         ).status(BookingStatus.PENDING).build();
@@ -91,7 +89,6 @@ public class BookingServiceImpl implements BookingService {
 
 
     // FIND BY ID
-
     @Override
     @Transactional(readOnly = true)
     public BookingResponse findById(Long id) {
@@ -100,7 +97,6 @@ public class BookingServiceImpl implements BookingService {
 
 
     // FIND MY BOOKINGS
-
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponse> findMyBookings() {
