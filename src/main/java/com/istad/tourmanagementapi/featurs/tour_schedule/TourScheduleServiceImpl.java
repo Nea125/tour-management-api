@@ -69,6 +69,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                 scheduleMapper.toEntity(request);
 
         schedule.setTour(tour);
+        schedule.setCapacity(tour.getMaxParticipants());
 
         schedule.setStatus(
                 TourScheduleStatus.OPEN
@@ -373,18 +374,19 @@ public class TourScheduleServiceImpl implements TourScheduleService {
     }
 
 
-    // CONVERT SCHEDULE TO RESPONSE WITH AVAILABILITY
+
     private TourScheduleResponse toResponse(
             TourSchedule schedule
     ) {
-
         Integer bookedPeople =
-                bookingRepository.countConfirmedPeopleByScheduleId(
+                bookingRepository.countPaidPeopleByScheduleId(
                         schedule.getId()
                 );
 
-        Integer availableCapacity =
-                schedule.getCapacity() - bookedPeople;
+        Integer availableCapacity = Math.max(
+                0,
+                schedule.getCapacity() - bookedPeople
+        );
 
         TourScheduleResponse response =
                 scheduleMapper.toResponse(schedule);
@@ -396,7 +398,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
                 response.endDate(),
                 response.capacity(),
                 availableCapacity,
-                response.status(),
+                schedule.getStatus(),
                 response.isDeleted()
         );
     }

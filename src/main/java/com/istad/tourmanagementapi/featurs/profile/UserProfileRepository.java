@@ -1,6 +1,7 @@
 package com.istad.tourmanagementapi.featurs.profile;
 
 import com.istad.tourmanagementapi.featurs.enums.UserRole;
+import com.istad.tourmanagementapi.featurs.enums.UserStatus;
 import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +28,11 @@ public interface UserProfileRepository
     SELECT COUNT(u)
     FROM UserProfile u
     WHERE u.role = :role
+      AND u.status = :status
+      AND u.isDeleted = false
 """)
-    Long countUsersByRole(
-            @Param("role") UserRole role
+    Long countUsersByRoleAndStatus(
+            @Param("role") UserRole role,
+            @Param("status") UserStatus status
     );
 }

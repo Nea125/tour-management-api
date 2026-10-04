@@ -3,6 +3,7 @@ package com.istad.tourmanagementapi.featurs.profile;
 
 import com.istad.tourmanagementapi.featurs.profile.dto.CreateUserProfileRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.PatchUserProfileRequest;
+import com.istad.tourmanagementapi.featurs.profile.dto.UpdateUserRoleRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.UserProfileResponse;
 import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
@@ -10,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -99,6 +102,19 @@ public class UserProfileController {
                 .status(1)
                 .message("Profile image updated successfully")
                 .data(userProfileService.updateProfileImage(id, image))
+                .build();
+    }
+
+//    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/role")
+    public ApiResponse<UserProfileResponse> updateUserRole(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateUserRoleRequest request
+    ) {
+        return ApiResponse.<UserProfileResponse>builder()
+                .status(1)
+                .message("User role updated successfully")
+                .data(userProfileService.updateUserRole(id, request.role()))
                 .build();
     }
 }

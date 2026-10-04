@@ -1,6 +1,7 @@
 package com.istad.tourmanagementapi.featurs.payment;
 
 import com.istad.tourmanagementapi.featurs.payment.PaymentService;
+import com.istad.tourmanagementapi.featurs.payment.dto.CanPayResponse;
 import com.istad.tourmanagementapi.featurs.payment.dto.PaymentRequest;
 import com.istad.tourmanagementapi.featurs.payment.dto.PaymentResponse;
 import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
@@ -30,6 +31,22 @@ public class PaymentController {
                 .data(
                         paymentService.pay(request)
                 )
+                .build();
+    }
+
+    @GetMapping("/booking/{bookingId}/can-pay")
+    public ApiResponse<CanPayResponse> canPay(
+            @PathVariable Long bookingId
+    ) {
+
+        CanPayResponse response =
+                paymentService.canPay(bookingId);
+
+        return ApiResponse
+                .<CanPayResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message(response.message())
+                .data(response)
                 .build();
     }
 }

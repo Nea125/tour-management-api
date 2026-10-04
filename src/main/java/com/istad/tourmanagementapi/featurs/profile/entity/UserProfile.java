@@ -65,7 +65,7 @@ public class UserProfile {
     @OneToMany(mappedBy = "user")
     List<Booking> bookings;
 
-// Relationship with Review [One user can have many reviews]
+    // Relationship with Review [One user can have many reviews]
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
 

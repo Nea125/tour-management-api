@@ -2,6 +2,7 @@ package com.istad.tourmanagementapi.featurs.review;
 
 import com.istad.tourmanagementapi.featurs.review.dto.ReviewRequest;
 import com.istad.tourmanagementapi.featurs.review.dto.ReviewResponse;
+import com.istad.tourmanagementapi.featurs.review.dto.ReviewUpdateRequest;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 
 public interface ReviewService {
@@ -19,4 +20,13 @@ public interface ReviewService {
     );
 
     void delete(Long id);
+
+    PageResponse<ReviewResponse> findMyReviews(
+            int page,
+            int size
+    );
+    ReviewResponse update(
+            Long id,
+            ReviewUpdateRequest request
+    );
 }

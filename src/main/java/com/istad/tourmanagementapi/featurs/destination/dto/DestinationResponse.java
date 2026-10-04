@@ -1,7 +1,4 @@
 package com.istad.tourmanagementapi.featurs.destination.dto;
-
-import com.istad.tourmanagementapi.featurs.enums.DestinationStatus;
-
 import java.util.List;
 
 public record DestinationResponse(

@@ -1,12 +1,12 @@
 package com.istad.tourmanagementapi.featurs.profile.dto;
 
 import com.istad.tourmanagementapi.featurs.enums.UserStatus;
-import com.istad.tourmanagementapi.featurs.media.dto.MediaResponse;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record UserProfileResponse(
-        String  id,
+        String id,
         String firstName,
         String lastName,
         String email,
@@ -14,7 +14,9 @@ public record UserProfileResponse(
         String profileImage,
         String gender,
         LocalDate dateOfBirth,
-        boolean isDeleted,
-        UserStatus status
+        Boolean isDeleted,
+        UserStatus status,
+        String role
+
 ) {
 }

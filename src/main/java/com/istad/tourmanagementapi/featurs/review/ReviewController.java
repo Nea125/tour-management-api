@@ -2,12 +2,14 @@ package com.istad.tourmanagementapi.featurs.review;
 
 import com.istad.tourmanagementapi.featurs.review.dto.ReviewRequest;
 import com.istad.tourmanagementapi.featurs.review.dto.ReviewResponse;
+import com.istad.tourmanagementapi.featurs.review.dto.ReviewUpdateRequest;
 import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/v1/reviews")
@@ -23,7 +25,7 @@ public class ReviewController {
     ) {
 
         return ApiResponse.<ReviewResponse>builder()
-                .status(HttpStatus.CREATED.value())
+                .status(1)
                 .message("Review created successfully")
                 .data(reviewService.create(request))
                 .build();
@@ -35,7 +37,7 @@ public class ReviewController {
     ) {
 
         return ApiResponse.<ReviewResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Review retrieved successfully")
                 .data(reviewService.findById(id))
                 .build();
@@ -47,7 +49,7 @@ public class ReviewController {
     ) {
 
         return ApiResponse.<ReviewResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Review retrieved successfully")
                 .data(reviewService.findByBookingId(bookingId))
                 .build();
@@ -61,7 +63,7 @@ public class ReviewController {
         reviewService.delete(id);
 
         return ApiResponse.<Void>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Review deleted successfully")
                 .build();
     }
@@ -74,7 +76,7 @@ public class ReviewController {
     ) {
 
         return ApiResponse.<PageResponse<ReviewResponse>>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Tour reviews retrieved successfully")
                 .data(
                         reviewService.findByTourId(
@@ -83,6 +85,35 @@ public class ReviewController {
                                 size
                         )
                 )
+                .build();
+    }
+
+    @GetMapping("/my")
+    public ApiResponse<PageResponse<ReviewResponse>> findMyReviews(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<ReviewResponse>>builder()
+                .status(1)
+                .message("My reviews retrieved successfully")
+                .data(
+                        reviewService.findMyReviews(
+                                page,
+                                size
+                        )
+                )
+                .build();
+    }
+
+    @PatchMapping("/{id}")
+    public ApiResponse<ReviewResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody ReviewUpdateRequest request
+    ) {
+        return ApiResponse.<ReviewResponse>builder()
+                .status(1)
+                .message("Review updated successfully")
+                .data(reviewService.update(id, request))
                 .build();
     }
 

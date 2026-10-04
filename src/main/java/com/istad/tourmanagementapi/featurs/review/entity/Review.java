@@ -37,7 +37,7 @@ public class Review {
     @JoinColumn(name = "tour_id", nullable = false )
     private Tour tour;
 
-    //Relationship with Booking
+    //Relationship with Booking [One booking have one review]
     @OneToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
@@ -46,4 +46,5 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserProfile user;
+    private boolean isDeleted;
 }

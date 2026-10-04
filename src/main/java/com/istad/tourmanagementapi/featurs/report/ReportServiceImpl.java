@@ -2,22 +2,22 @@ package com.istad.tourmanagementapi.featurs.report;
 
 import com.istad.tourmanagementapi.featurs.booking.BookingRepository;
 import com.istad.tourmanagementapi.featurs.destination.DestinationRepository;
-import com.istad.tourmanagementapi.featurs.enums.BookingStatus;
-import com.istad.tourmanagementapi.featurs.enums.TourGuideStatus;
-import com.istad.tourmanagementapi.featurs.enums.TourScheduleStatus;
-import com.istad.tourmanagementapi.featurs.enums.UserRole;
+import com.istad.tourmanagementapi.featurs.enums.*;
 import com.istad.tourmanagementapi.featurs.profile.UserProfileRepository;
 import com.istad.tourmanagementapi.featurs.report.ReportService;
-import com.istad.tourmanagementapi.featurs.report.dto.ReportResponse;
+import com.istad.tourmanagementapi.featurs.report.dto.*;
 import com.istad.tourmanagementapi.featurs.review.ReviewRepository;
 import com.istad.tourmanagementapi.featurs.tour.TourRepository;
 import com.istad.tourmanagementapi.featurs.tour_guide.TourGuideRepository;
 import com.istad.tourmanagementapi.featurs.tour_schedule.TourScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class ReportServiceImpl implements ReportService {
         LocalDate today = LocalDate.now();
         BigDecimal totalRevenue =
                 bookingRepository.getTotalRevenueByStatus(
-                        BookingStatus.CONFIRMED
+                        BookingStatus.PAID
                 );
 
         Long totalBooking =
@@ -52,8 +52,9 @@ public class ReportServiceImpl implements ReportService {
                 tourReviewRepository.getAverageRating();
 
         Long totalCustomer =
-                userProfileRepository.countUsersByRole(
-                        UserRole.CUSTOMER
+                userProfileRepository.countUsersByRoleAndStatus(
+                        UserRole.CUSTOMER,
+                        UserStatus.ACTIVE
                 );
 
         Long totalGuide =
@@ -92,4 +93,59 @@ public class ReportServiceImpl implements ReportService {
                 cancelledBooking
         );
     }
+
+    @Override
+    public List<TopTourResponse> getTopTours(int limit) {
+
+        PageRequest pageable =
+                PageRequest.of(0, limit);
+
+        return bookingRepository.findTopPerformingTours(
+                pageable
+        );
+    }
+
+    @Override
+    public List<TopDestinationResponse> getTopDestinations(
+            int limit
+    ) {
+
+        PageRequest pageable =
+                PageRequest.of(0, limit);
+
+        return bookingRepository.findTopDestinations(
+                pageable
+        );
+    }
+
+    @Override
+    public List<BookingStatusReportResponse> getBookingsByStatus() {
+
+        List<Object[]> results =
+                bookingRepository.countBookingsGroupByStatus();
+
+        List<BookingStatusReportResponse> response =
+                new ArrayList<>();
+
+        for (Object[] result : results) {
+
+            BookingStatus status =
+                    (BookingStatus) result[0];
+
+            Long total =
+                    (Long) result[1];
+
+            response.add(
+                    new BookingStatusReportResponse(
+                            status,
+                            total
+                    )
+            );
+        }
+
+        return response;
+    }
+
+
+
 }

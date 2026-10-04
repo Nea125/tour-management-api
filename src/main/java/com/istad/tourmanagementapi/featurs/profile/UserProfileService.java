@@ -1,5 +1,6 @@
 package com.istad.tourmanagementapi.featurs.profile;
 
+import com.istad.tourmanagementapi.featurs.enums.UserRole;
 import com.istad.tourmanagementapi.featurs.profile.dto.CreateUserProfileRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.PatchUserProfileRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.UserProfileResponse;
@@ -17,4 +18,8 @@ public interface UserProfileService {
 
     UserProfileResponse updateProfileImage(String id, MultipartFile image);
     void delete(String id);
+    UserProfileResponse updateUserRole(
+            String id,
+            UserRole role
+    );
 }

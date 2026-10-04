@@ -1,6 +1,8 @@
 package com.istad.tourmanagementapi.featurs.tour;
 
 import com.istad.tourmanagementapi.featurs.media.Media;
+import com.istad.tourmanagementapi.featurs.report.dto.TopDestinationResponse;
+import com.istad.tourmanagementapi.featurs.report.dto.TopTourResponse;
 import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TourRepository

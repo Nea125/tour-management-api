@@ -1,11 +1,10 @@
 package com.istad.tourmanagementapi.featurs.profile.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
+import com.istad.tourmanagementapi.featurs.enums.UserRole;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record CreateUserProfileRequest(
         @NotBlank
@@ -36,5 +35,7 @@ public record CreateUserProfileRequest(
         String gender,
 
         @Past
-        LocalDate dateOfBirth
+        LocalDate dateOfBirth,
+        @NotNull
+        UserRole role
 ) {}

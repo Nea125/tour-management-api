@@ -21,7 +21,7 @@ public class ParticipantController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ParticipantResponse> create(@RequestBody ParticipantRequest request) {
         return ApiResponse.<ParticipantResponse>builder()
-                .status(HttpStatus.CREATED.value())
+                .status(1)
                 .message("Booking participant created successfully")
                 .data(bookingParticipantService.create(request))
                 .build();
@@ -30,7 +30,7 @@ public class ParticipantController {
     @GetMapping("/{id}")
     public ApiResponse<ParticipantResponse> findById(@PathVariable Long id) {
         return ApiResponse.<ParticipantResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Booking participant retrieved successfully")
                 .data(bookingParticipantService.findById(id))
                 .build();
@@ -42,7 +42,7 @@ public class ParticipantController {
             @RequestParam(defaultValue = "10") int size) {
         Page<ParticipantResponse> result = bookingParticipantService.findAll(page, size);
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Booking participants retrieved successfully")
                 .data(result.getContent())
                 .pagination(pageMapper.mapToPageResponse(result))
@@ -53,7 +53,7 @@ public class ParticipantController {
     public ApiResponse<ParticipantResponse> update(@PathVariable Long id,
                                                    @RequestBody ParticipantRequest request) {
         return ApiResponse.<ParticipantResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Booking participant updated successfully")
                 .data(bookingParticipantService.update(id, request))
                 .build();
@@ -63,7 +63,7 @@ public class ParticipantController {
     public ApiResponse<Void> delete(@PathVariable Long id) {
         bookingParticipantService.delete(id);
         return ApiResponse.<Void>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Booking participant deleted successfully")
                 .build();
     }

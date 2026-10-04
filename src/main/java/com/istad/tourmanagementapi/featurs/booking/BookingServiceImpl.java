@@ -134,20 +134,14 @@ public class BookingServiceImpl implements BookingService {
     ) {
 
         Booking booking = getById(id);
-        if (booking.getStatus() == BookingStatus.COMPLETED) {
+        if (booking.getStatus() == BookingStatus.PAID) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Completed booking cannot be updated"
+                    "Paid booking cannot be updated"
             );
         }
 
-        if (booking.getStatus() == BookingStatus.CONFIRMED) {
 
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Confirmed booking cannot be updated"
-            );
-        }
 
         bookingMapper.updateEntity(
                 request,
@@ -171,10 +165,10 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = getById(id);
 
-        if (booking.getStatus() == BookingStatus.COMPLETED) {
+        if (booking.getStatus() == BookingStatus.PAID) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Completed booking cannot be cancelled"
+                    "Paid booking cannot be cancelled"
             );
         }
 
@@ -239,60 +233,114 @@ public class BookingServiceImpl implements BookingService {
 
     // VALIDATE SCHEDULE
 
-    private void validateSchedule(
-            TourSchedule schedule
-    ) {
-
-        if (schedule.getStatus() != TourScheduleStatus.OPEN) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Tour schedule is not open for booking"
-            );
-        }
-    }
+//    private void validateSchedule(
+//            TourSchedule schedule
+//    ) {
+//
+//        if (schedule.getStatus() != TourScheduleStatus.OPEN) {
+//
+//            throw new ResponseStatusException(
+//                    HttpStatus.BAD_REQUEST,
+//                    "Tour schedule is not open for booking"
+//            );
+//        }
+//    }
 
 
 
     // VALIDATE AVAILABILITY
 
+//    private void validateAvailability(
+//            TourSchedule schedule,
+//            Integer numberOfPeople
+//    ) {
+//
+//        if (
+//                numberOfPeople == null ||
+//                        numberOfPeople <= 0
+//        ) {
+//
+//            throw new ResponseStatusException(
+//                    HttpStatus.BAD_REQUEST,
+//                    "Number of people must be greater than 0"
+//            );
+//        }
+//
+//        Integer maxParticipants =
+//                schedule.getTour()
+//                        .getMaxParticipants();
+//
+//        Long bookedParticipants =
+//                bookingRepository.sumBookedPeople(
+//                        schedule.getId(),
+//                        List.of(
+//                                BookingStatus.PENDING,
+//                                BookingStatus.PAID
+//                        )
+//                );
+//
+//        long remaining =
+//                maxParticipants - bookedParticipants;
+//
+//        if (numberOfPeople > remaining) {
+//
+//            throw new ResponseStatusException(
+//                    HttpStatus.BAD_REQUEST,
+//                    "Not enough available seats"
+//            );
+//        }
+//    }
+
+    private void validateSchedule(TourSchedule schedule) {
+
+        if (schedule.getStatus() != TourScheduleStatus.OPEN) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Tour schedule is not open for booking"
+            );
+        }
+
+        Integer bookedPeople =
+                bookingRepository.countPaidPeopleByScheduleId(
+                        schedule.getId()
+
+                );
+
+        int availableCapacity =
+                schedule.getCapacity() - bookedPeople;
+
+        if (availableCapacity <= 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Tour schedule is fully booked"
+            );
+        }
+    }
+
     private void validateAvailability(
             TourSchedule schedule,
             Integer numberOfPeople
     ) {
-
-        if (
-                numberOfPeople == null ||
-                        numberOfPeople <= 0
-        ) {
-
+        if (numberOfPeople == null || numberOfPeople <= 0) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Number of people must be greater than 0"
             );
         }
 
-        Integer maxParticipants =
-                schedule.getTour()
-                        .getMaxParticipants();
-
-        Long bookedParticipants =
-                bookingRepository.sumBookedPeople(
-                        schedule.getId(),
-                        List.of(
-                                BookingStatus.PENDING,
-                                BookingStatus.CONFIRMED
-                        )
+        Integer bookedPeople =
+                bookingRepository.countPaidPeopleByScheduleId(
+                        schedule.getId()
                 );
 
-        long remaining =
-                maxParticipants - bookedParticipants;
+        int availableCapacity =
+                schedule.getCapacity() - bookedPeople;
 
-        if (numberOfPeople > remaining) {
-
+        if (numberOfPeople > availableCapacity) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Not enough available seats"
+                    "Not enough available seats. Remaining seats: "
+                            + Math.max(0, availableCapacity)
             );
         }
     }

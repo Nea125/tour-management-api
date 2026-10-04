@@ -9,11 +9,7 @@ public record CreateTourScheduleRequest(
         @NotNull(message = "Start date is required")
         LocalDate startDate,
         @NotNull(message = "Start date is required")
-        LocalDate endDate,
-        @NotNull(message = "Capacity is required")
-        Integer capacity
-
-
+        LocalDate endDate
 
 ) {
 }

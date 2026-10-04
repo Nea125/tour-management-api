@@ -159,18 +159,7 @@ public class AuthServiceImpl implements AuthService {
         return usersResource.search(username).getFirst();
     }
 
-    private void assignGroups(String username, UsersResource usersResource) {
-        UserRepresentation createdUser = usersResource
-                .search(username)
-                .getFirst();
-        UserResource keycloakUser = usersResource.get(createdUser.getId());
-        GroupsResource groupsResource = keycloak.realm(realm)
-                .groups();
-        GroupRepresentation groupEcommerce = groupsResource.groups("Ecommerce", 0, 1)
-                .getFirst();
-        log.info("Group Id: {}", groupEcommerce.getId());
-        keycloakUser.joinGroup(groupEcommerce.getId());
-    }
+
 
     private void assignRoles(String username, UsersResource usersResource) {
         // Start assigning role (USER, CUSTOMER)

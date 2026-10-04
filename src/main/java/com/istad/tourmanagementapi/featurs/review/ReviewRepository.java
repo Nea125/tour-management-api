@@ -12,23 +12,29 @@ import java.util.Optional;
 public interface ReviewRepository
         extends JpaRepository<Review, Long> {
 
-    boolean existsByBooking_Id(Long bookingId);
+    boolean existsByBooking_IdAndIsDeletedFalse(Long bookingId);
 
-    Optional<Review> findByBooking_Id(Long bookingId);
+    Optional<Review> findByBooking_IdAndIsDeletedFalse(Long bookingId);
 
-    @Query("""
-    SELECT r
-    FROM Review r
-    WHERE r.tour.id = :tourId
-""")
-    Page<Review> findByTourId(
-            @Param("tourId") Long tourId,
+    Page<Review> findByTour_IdAndIsDeletedFalse(
+            Long tourId,
             Pageable pageable
     );
 
+    Page<Review> findByUser_IdAndIsDeletedFalse(
+            String userId,
+            Pageable pageable
+    );
+
+    // Query to get the average rating
+    // Get the average rating from all non-deleted reviews
+    // If there are no reviews, return 0
+    // COALESCE returns 0 when AVG(r.rating) is null
+    // Example: AVG(6, 3) = 4.5
     @Query("""
-    SELECT COALESCE(AVG(r.rating), 0)
-    FROM Review r
-""")
+           SELECT COALESCE(AVG(r.rating), 0)
+           FROM Review r
+           WHERE r.isDeleted = false
+           """)
     Double getAverageRating();
 }
