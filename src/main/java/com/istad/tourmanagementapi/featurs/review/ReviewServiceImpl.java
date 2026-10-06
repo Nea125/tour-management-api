@@ -3,6 +3,7 @@ package com.istad.tourmanagementapi.featurs.review;
 import com.istad.tourmanagementapi.featurs.booking.BookingRepository;
 import com.istad.tourmanagementapi.featurs.booking.entity.Booking;
 import com.istad.tourmanagementapi.featurs.enums.BookingStatus;
+import com.istad.tourmanagementapi.featurs.enums.UserRole;
 import com.istad.tourmanagementapi.featurs.profile.UserProfileRepository;
 import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
 import com.istad.tourmanagementapi.featurs.review.dto.ReviewRequest;
@@ -17,10 +18,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -89,6 +92,8 @@ public class ReviewServiceImpl implements ReviewService {
         review.setTour(
                 booking.getSchedule().getTour()
         );
+        review.setCreatedAt(LocalDateTime.now());
+        review.setUpdatedAt(null);
 
         // New review is active
         review.setDeleted(false);
@@ -143,8 +148,15 @@ public class ReviewServiceImpl implements ReviewService {
                         )
                 );
 
-        // Only the review owner can delete it
-        if (!review.getUser().getId().equals(userId)) {
+        boolean isAdmin = AuthUtils.hasRole(UserRole.ADMIN.name());
+        boolean isManager = AuthUtils.hasRole(UserRole.MANAGER.name());
+        IO.println("isAdmin: " + isAdmin);
+        IO.println("isManager: " + isManager);
+        boolean isOwner = review.getUser().getId().equals(userId);
+
+
+        // Only the review owner and admin,manager can delete it
+        if (!isAdmin && !isOwner && !isManager) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "You cannot delete this review"
@@ -153,7 +165,6 @@ public class ReviewServiceImpl implements ReviewService {
 
         // Soft delete
         review.setDeleted(true);
-
         reviewRepository.save(review);
     }
 
@@ -173,8 +184,11 @@ public class ReviewServiceImpl implements ReviewService {
                         )
                 );
 
-        Pageable pageable = PageRequest.of(page, size);
-
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
         Page<ReviewResponse> reviews =
                 reviewRepository
                         .findByTour_IdAndIsDeletedFalse(
@@ -200,7 +214,11 @@ public class ReviewServiceImpl implements ReviewService {
 
         String userId = AuthUtils.extractUserId();
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
 
         Page<ReviewResponse> reviews =
                 reviewRepository
@@ -244,7 +262,7 @@ public class ReviewServiceImpl implements ReviewService {
                     "You cannot edit this review"
             );
         }
-
+        review.setUpdatedAt(LocalDateTime.now());
         review.setRating(request.rating());
         review.setComment(request.comment());
 

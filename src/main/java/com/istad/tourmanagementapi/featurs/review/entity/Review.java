@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +32,9 @@ public class Review {
 
     @Column(columnDefinition = "TEXT")
     private String comment;
+
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 
 
     // Relationship with Tour [Many to one: Much review belongs to one tour]

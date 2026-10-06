@@ -1,7 +1,5 @@
 package com.istad.tourmanagementapi.featurs.destination.dto;
 
-import jakarta.validation.constraints.Size;
-
 public record UpdateDestinationRequest(
 
         String name,

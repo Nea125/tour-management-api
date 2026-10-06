@@ -15,12 +15,8 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-
-
-
-    // Get all bookings belonging to a specific user
-    List<Booking> findAllByUser_Id(String userId);
-
+    // Get all bookings belonging to a specific user short by latest booking date
+    List<Booking> findAllByUser_IdOrderByBookingDateDesc(String userId);
 
     // Get total number of paid people for a specific schedule
     @Query("""

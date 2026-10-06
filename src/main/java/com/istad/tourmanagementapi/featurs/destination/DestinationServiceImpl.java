@@ -9,7 +9,6 @@ import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.media.MediaService;
 import com.istad.tourmanagementapi.featurs.media.dto.MediaResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -27,8 +26,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DestinationServiceImpl
-        implements DestinationService {
+public class DestinationServiceImpl implements DestinationService {
 
     private final DestinationRepository destinationRepository;
 

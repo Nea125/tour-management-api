@@ -36,4 +36,20 @@ public final class AuthUtils {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
+
+    public static boolean hasRole(String role) {
+
+        Authentication auth = getAuth();
+
+        if (auth == null || !auth.isAuthenticated()
+                || auth instanceof AnonymousAuthenticationToken) {
+            return false;
+        }
+
+        return auth.getAuthorities()
+                .stream()
+                .anyMatch(authority ->
+                        authority.getAuthority().equals(role)
+                );
+    }
 }

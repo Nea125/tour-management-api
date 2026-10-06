@@ -61,7 +61,6 @@ public class ReviewController {
     ) {
 
         reviewService.delete(id);
-
         return ApiResponse.<Void>builder()
                 .status(1)
                 .message("Review deleted successfully")
@@ -78,13 +77,7 @@ public class ReviewController {
         return ApiResponse.<PageResponse<ReviewResponse>>builder()
                 .status(1)
                 .message("Tour reviews retrieved successfully")
-                .data(
-                        reviewService.findByTourId(
-                                tourId,
-                                page,
-                                size
-                        )
-                )
+                .data(reviewService.findByTourId(tourId, page, size))
                 .build();
     }
 
@@ -96,15 +89,9 @@ public class ReviewController {
         return ApiResponse.<PageResponse<ReviewResponse>>builder()
                 .status(1)
                 .message("My reviews retrieved successfully")
-                .data(
-                        reviewService.findMyReviews(
-                                page,
-                                size
-                        )
-                )
+                .data(reviewService.findMyReviews(page,size))
                 .build();
     }
-
     @PatchMapping("/{id}")
     public ApiResponse<ReviewResponse> update(
             @PathVariable Long id,

@@ -37,24 +37,6 @@ public class MediaServiceImpl implements MediaService {
 
     private static final String MB = "MB";
 
-//    @Override
-//    @Transactional
-//    public MediaResponse uploadMedia(MultipartFile file) {
-//
-//        Media media = uploadMediaEntity(file);
-//
-//        return buildMediaResponse(media);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public List<MediaResponse> uploadMedia(List<MultipartFile> files) {
-//
-//        return files.stream()
-//                .map(this::uploadMediaEntity)
-//                .map(this::buildMediaResponse)
-//                .toList();
-//    }
 
     @Override
     @Transactional
@@ -125,10 +107,7 @@ public class MediaServiceImpl implements MediaService {
 
         mediaRepository.save(media);
 
-        log.info(
-                "Media uploaded successfully: {}",
-                media.getFileSize()
-        );
+        log.info("Media uploaded successfully: {}", media.getFileSize());
 
         return media;
     }

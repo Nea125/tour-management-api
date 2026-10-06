@@ -43,7 +43,13 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/auth/register",
+                                "/api/v1/users",
+
                                 "/api/v1/auth/login"
+                        ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/users"
                         ).permitAll()
 
                         // If you have other auth endpoints:
@@ -83,6 +89,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/orders/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/media/**"
                         ).permitAll()
 
                         .requestMatchers(

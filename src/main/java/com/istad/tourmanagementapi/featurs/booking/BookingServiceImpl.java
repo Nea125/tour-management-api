@@ -104,7 +104,7 @@ public class BookingServiceImpl implements BookingService {
         String userId = AuthUtils.extractUserId();
 
         return bookingRepository
-                .findAllByUser_Id(userId)
+                .findAllByUser_IdOrderByBookingDateDesc(userId)
                 .stream()
                 .map(bookingMapper::toResponse)
                 .toList();
@@ -231,65 +231,7 @@ public class BookingServiceImpl implements BookingService {
 
 
 
-    // VALIDATE SCHEDULE
 
-//    private void validateSchedule(
-//            TourSchedule schedule
-//    ) {
-//
-//        if (schedule.getStatus() != TourScheduleStatus.OPEN) {
-//
-//            throw new ResponseStatusException(
-//                    HttpStatus.BAD_REQUEST,
-//                    "Tour schedule is not open for booking"
-//            );
-//        }
-//    }
-
-
-
-    // VALIDATE AVAILABILITY
-
-//    private void validateAvailability(
-//            TourSchedule schedule,
-//            Integer numberOfPeople
-//    ) {
-//
-//        if (
-//                numberOfPeople == null ||
-//                        numberOfPeople <= 0
-//        ) {
-//
-//            throw new ResponseStatusException(
-//                    HttpStatus.BAD_REQUEST,
-//                    "Number of people must be greater than 0"
-//            );
-//        }
-//
-//        Integer maxParticipants =
-//                schedule.getTour()
-//                        .getMaxParticipants();
-//
-//        Long bookedParticipants =
-//                bookingRepository.sumBookedPeople(
-//                        schedule.getId(),
-//                        List.of(
-//                                BookingStatus.PENDING,
-//                                BookingStatus.PAID
-//                        )
-//                );
-//
-//        long remaining =
-//                maxParticipants - bookedParticipants;
-//
-//        if (numberOfPeople > remaining) {
-//
-//            throw new ResponseStatusException(
-//                    HttpStatus.BAD_REQUEST,
-//                    "Not enough available seats"
-//            );
-//        }
-//    }
 
     private void validateSchedule(TourSchedule schedule) {
 

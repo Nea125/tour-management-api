@@ -1,10 +1,8 @@
 package com.istad.tourmanagementapi.featurs.profile;
 
 
-import com.istad.tourmanagementapi.featurs.profile.dto.CreateUserProfileRequest;
-import com.istad.tourmanagementapi.featurs.profile.dto.PatchUserProfileRequest;
-import com.istad.tourmanagementapi.featurs.profile.dto.UpdateUserRoleRequest;
-import com.istad.tourmanagementapi.featurs.profile.dto.UserProfileResponse;
+import com.istad.tourmanagementapi.featurs.enums.UserStatus;
+import com.istad.tourmanagementapi.featurs.profile.dto.*;
 import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import jakarta.validation.Valid;
@@ -105,7 +103,6 @@ public class UserProfileController {
                 .build();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/role")
     public ApiResponse<UserProfileResponse> updateUserRole(
             @PathVariable String id,
@@ -115,6 +112,18 @@ public class UserProfileController {
                 .status(1)
                 .message("User role updated successfully")
                 .data(userProfileService.updateUserRole(id, request.role()))
+                .build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ApiResponse<UserProfileResponse> updateUserStatus(
+            @PathVariable String id,
+            @RequestBody UpdateUserStatusRequest status
+    ) {
+        return ApiResponse.<UserProfileResponse>builder()
+                .status(1)
+                .message("User status updated successfully")
+                .data(userProfileService.updateUserStatus(id, status))
                 .build();
     }
 }

@@ -6,7 +6,6 @@ import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.media.MediaService;
 import com.istad.tourmanagementapi.featurs.media.dto.MediaResponse;
 import com.istad.tourmanagementapi.featurs.tour.dto.CreateTourRequest;
-
 import com.istad.tourmanagementapi.featurs.tour.dto.TourResponse;
 import com.istad.tourmanagementapi.featurs.tour.dto.UpdateTourRequest;
 import com.istad.tourmanagementapi.featurs.tour.entity.Tour;
@@ -51,23 +50,12 @@ public class TourServiceImpl implements TourService {
         }
 
         Tour tour = tourMapper.toEntity(request);
-
         tour.setIsDeleted(false);
-
-        tour.setDestination(
-                getDestinationById(
-                        request.destinationId()
-                )
+        tour.setDestination(getDestinationById(request.destinationId())
         );
-
-        List<Media> medias =
-                mediaService.uploadMediaEntities(images);
-
+        List<Media> medias = mediaService.uploadMediaEntities(images);
         tour.setMedia(medias);
-
-        return tourMapper.toResponse(
-                tourRepository.save(tour)
-        );
+        return tourMapper.toResponse(tourRepository.save(tour));
     }
 
     @Override
@@ -82,11 +70,8 @@ public class TourServiceImpl implements TourService {
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
-
         Page<TourResponse> tours =
-                tourRepository
-                        .findByIsDeletedFalse(pageable)
-                        .map(tourMapper::toResponse);
+                tourRepository.findByIsDeletedFalse(pageable).map(tourMapper::toResponse);
 
         return PageResponse.<TourResponse>builder()
                 .items(tours.getContent())
@@ -105,10 +90,7 @@ public class TourServiceImpl implements TourService {
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
-
-        Page<TourResponse> tours =
-                tourRepository
-                        .findByIsDeletedFalseAndTitleContainingIgnoreCase(
+        Page<TourResponse> tours = tourRepository.findByIsDeletedFalseAndTitleContainingIgnoreCase(
                                 title,
                                 pageable
                         )
@@ -151,11 +133,8 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public void delete(Long id) {
-
         Tour tour = getById(id);
-
         tour.setIsDeleted(true);
-
         tourRepository.save(tour);
     }
 
@@ -194,13 +173,7 @@ public class TourServiceImpl implements TourService {
         getDestinationById(destinationId);
 
         Pageable pageable = PageRequest.of(page, size);
-
-        Page<TourResponse> tours =
-                tourRepository
-                        .findByDestinationIdAndIsDeletedFalse(
-                                destinationId,
-                                pageable
-                        )
+        Page<TourResponse> tours = tourRepository.findByDestinationIdAndIsDeletedFalse(destinationId, pageable)
                         .map(tourMapper::toResponse);
 
         return PageResponse.<TourResponse>builder()
@@ -218,12 +191,8 @@ public class TourServiceImpl implements TourService {
             Long tourId,
             Integer imageId
     ) {
-
         Media media = tourRepository
-                .findMediaByTourIdAndImageId(
-                        tourId,
-                        imageId
-                )
+                .findMediaByTourIdAndImageId(tourId, imageId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -231,16 +200,10 @@ public class TourServiceImpl implements TourService {
                         )
                 );
 
-        Resource resource =
-                mediaService.getMediaResource(
-                        media.getId()
-                );
+        Resource resource = mediaService.getMediaResource(media.getId());
 
         return ResponseEntity.ok()
-                .contentType(
-                        MediaType.parseMediaType(
-                                media.getMediaType()
-                        )
+                .contentType(MediaType.parseMediaType(media.getMediaType())
                 )
                 .body(resource);
     }
@@ -252,22 +215,13 @@ public class TourServiceImpl implements TourService {
             Integer imageId,
             MultipartFile image
     ) {
-
-        Media media = tourRepository
-                .findMediaByTourIdAndImageId(
-                        tourId,
-                        imageId
-                )
-                .orElseThrow(() ->
-                        new ResponseStatusException(
+        Media media = tourRepository.findMediaByTourIdAndImageId(tourId, imageId)
+                .orElseThrow(() -> new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
                                 "Image not found for this tour"
                         )
                 );
-
-        return mediaService.updateMedia(
-                media.getId(),
-                image
+        return mediaService.updateMedia(media.getId(), image
         );
     }
 }

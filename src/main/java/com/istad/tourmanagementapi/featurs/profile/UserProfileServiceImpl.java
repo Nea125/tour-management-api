@@ -6,6 +6,7 @@ import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.media.MediaService;
 import com.istad.tourmanagementapi.featurs.profile.dto.CreateUserProfileRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.PatchUserProfileRequest;
+import com.istad.tourmanagementapi.featurs.profile.dto.UpdateUserStatusRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.UserProfileResponse;
 import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
 import com.istad.tourmanagementapi.featurs.profile.mapper.UserProfileMapper;
@@ -36,7 +37,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
 
-    private final UserProfileRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
     private final UserProfileMapper userProfileMapper;
     private final Keycloak keycloak;
     private final MediaService mediaService;
@@ -56,7 +57,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             );
         }
 
-        if (userRepository.existsByEmail(request.email())) {
+        if (userProfileRepository.existsByEmail(request.email())) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "User already exists with email: "
@@ -116,7 +117,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         userProfile.setStatus(UserStatus.ACTIVE);
 
-        UserProfile savedUser = userRepository.save(userProfile);
+        UserProfile savedUser = userProfileRepository.save(userProfile);
 
         return toResponse(savedUser);
     }
@@ -128,7 +129,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserProfile> users = userRepository.findAllByIsDeletedFalse(pageable);
+        Page<UserProfile> users = userProfileRepository.findAllByIsDeletedFalse(pageable);
         List<UserProfileResponse> items =
                 users.getContent()
                         .stream()
@@ -155,7 +156,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     ) {
 
         UserProfile userProfile =
-                userRepository
+                userProfileRepository
                         .findByIdAndIsDeletedFalse(userId)
                         .orElseThrow(() ->
                                 new ResponseStatusException(
@@ -197,7 +198,7 @@ public class UserProfileServiceImpl implements UserProfileService {
                 && !request.email()
                 .equals(userProfile.getEmail())) {
 
-            if (userRepository.existsByEmail(request.email()
+            if (userProfileRepository.existsByEmail(request.email()
             )) {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
@@ -213,7 +214,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         userResource.update(keycloakUser);
         userProfileMapper.updateEntity(request, userProfile);
-        UserProfile updatedUser = userRepository.save(userProfile);
+        UserProfile updatedUser = userProfileRepository.save(userProfile);
 
         return toResponse(updatedUser);
     }
@@ -301,7 +302,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         } else {
             mediaService.updateMedia(profileImage.getId(), image);
         }
-        UserProfile updatedUserProfile = userRepository.save(userProfile);
+        UserProfile updatedUserProfile = userProfileRepository.save(userProfile);
         return toResponse(updatedUserProfile);
     }
 
@@ -315,7 +316,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         UserProfile user = getById(id);
         user.setDeleted(true);
-        userRepository.save(user);
+        userProfileRepository.save(user);
     }
 
 
@@ -397,7 +398,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             String id
     ) {
 
-        return userRepository
+        return userProfileRepository
                 .findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(
@@ -456,4 +457,23 @@ public class UserProfileServiceImpl implements UserProfileService {
                 List.of(newRoleRepresentation)
         );
     }
+
+
+
+    @Override
+    public UserProfileResponse updateUserStatus(String id, UpdateUserStatusRequest request) {
+
+        UserProfile userProfile = userProfileRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found with id: " + id
+                ));
+
+        userProfile.setStatus(request.status());
+
+        UserProfile savedUser = userProfileRepository.save(userProfile);
+
+        return userProfileMapper.toResponse(savedUser);
+    }
+
 }

@@ -1,7 +1,4 @@
 package com.istad.tourmanagementapi.featurs.tour;
-
-
-import com.istad.tourmanagementapi.featurs.destination.dto.CreateDestinationRequest;
 import com.istad.tourmanagementapi.featurs.media.dto.MediaResponse;
 import com.istad.tourmanagementapi.featurs.tour.dto.CreateTourRequest;
 import com.istad.tourmanagementapi.featurs.tour.dto.TourResponse;

@@ -3,6 +3,7 @@ package com.istad.tourmanagementapi.featurs.destination;
 import com.istad.tourmanagementapi.featurs.destination.dto.CreateDestinationRequest;
 import com.istad.tourmanagementapi.featurs.destination.dto.DestinationResponse;
 import com.istad.tourmanagementapi.featurs.destination.dto.UpdateDestinationRequest;
+import com.istad.tourmanagementapi.featurs.enums.DestinationStatus;
 import com.istad.tourmanagementapi.featurs.media.dto.MediaResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import org.springframework.core.io.Resource;

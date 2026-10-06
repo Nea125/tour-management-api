@@ -100,10 +100,7 @@ public class DestinationController {
     ) {
 
         PageResponse<DestinationResponse> destinations =
-                destinationService.findAll(
-                        page,
-                        size
-                );
+                destinationService.findAll(page, size);
 
         String message =
                 destinations.getItems().isEmpty()

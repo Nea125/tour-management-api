@@ -1,8 +1,10 @@
 package com.istad.tourmanagementapi.featurs.profile;
 
 import com.istad.tourmanagementapi.featurs.enums.UserRole;
+import com.istad.tourmanagementapi.featurs.enums.UserStatus;
 import com.istad.tourmanagementapi.featurs.profile.dto.CreateUserProfileRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.PatchUserProfileRequest;
+import com.istad.tourmanagementapi.featurs.profile.dto.UpdateUserStatusRequest;
 import com.istad.tourmanagementapi.featurs.profile.dto.UserProfileResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,4 +24,5 @@ public interface UserProfileService {
             String id,
             UserRole role
     );
+    UserProfileResponse updateUserStatus(String id, UpdateUserStatusRequest request);
 }
