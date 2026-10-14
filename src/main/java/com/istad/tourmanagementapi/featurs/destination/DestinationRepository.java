@@ -2,14 +2,13 @@ package com.istad.tourmanagementapi.featurs.destination;
 
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
 import com.istad.tourmanagementapi.featurs.media.Media;
-import com.istad.tourmanagementapi.featurs.report.dto.TopDestinationResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+
 import java.util.Optional;
 
 public interface DestinationRepository
@@ -17,34 +16,25 @@ public interface DestinationRepository
 
     boolean existsByNameIgnoreCase(String name);
 
-    Page<Destination> findByIsDeletedFalse(
-            Pageable pageable
-    );
+    Page<Destination> findByIsDeletedFalse(Pageable pageable);
 
-    Optional<Destination> findByIdAndIsDeletedFalse(
-            Long id
-    );
+    Optional<Destination> findByIdAndIsDeletedFalse(Long id);
 
-    Page<Destination>
-    findByIsDeletedFalseAndNameContainingIgnoreCase(
-            String name,
-            Pageable pageable
-    );
+    Page<Destination> findByIsDeletedFalseAndNameContainingIgnoreCase(String name, Pageable pageable);
 
-    // Find destination media by media and destination id
+    // GET DESTINATION IMAGE BY ID
     @Query("""
-    SELECT m
-    FROM Destination d
-    JOIN d.media m
-    WHERE d.id = :destinationId
-    AND m.id = :imageId
-    AND d.isDeleted = false
+    SELECT dm.media
+    FROM DestinationMedia dm
+    WHERE dm.destination.id = :destinationId
+    AND dm.media.id = :imageId
+    AND dm.destination.isDeleted = false
     """)
     Optional<Media> findMediaByDestinationIdAndImageId(
             @Param("destinationId") Long destinationId,
             @Param("imageId") Integer imageId
     );
-
+// COUNT TOTAL DESTINATION
     @Query("""
     SELECT COUNT(d)
     FROM Destination d

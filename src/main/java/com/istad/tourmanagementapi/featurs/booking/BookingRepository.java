@@ -4,6 +4,7 @@ import com.istad.tourmanagementapi.featurs.booking.entity.Booking;
 import com.istad.tourmanagementapi.featurs.enums.BookingStatus;
 import com.istad.tourmanagementapi.featurs.report.dto.TopDestinationResponse;
 import com.istad.tourmanagementapi.featurs.report.dto.TopTourResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +16,13 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    // Get all bookings belonging to a specific user short by latest booking date
+
+
+    // Get bookings by status
+    Page<Booking> findAllByStatus(BookingStatus status, Pageable pageable);
+    // All bookings of one schedule sort by DESC date
+    List<Booking> findAllBySchedule_IdOrderByBookingDateDesc(Long scheduleId);
+    // Get all bookings belonging to a specific user sort by DESC date
     List<Booking> findAllByUser_IdOrderByBookingDateDesc(String userId);
 
     // Get total number of paid people for a specific schedule
@@ -27,7 +34,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     """)
     Integer countPaidPeopleByScheduleId(
             @Param("scheduleId") Long scheduleId
-
     );
 
 
@@ -44,7 +50,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     // Get total number of bookings
     @Query("""
-        SELECT COUNT(b)
+        SELECT COALESCE(COUNT(b),0)
         FROM Booking b
     """)
     Long countTotalBookings();
@@ -61,12 +67,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     );
 
 
-    // Get booking count grouped by booking status
+    //Get booking counts for all statuses in a single query.
+//    SELECT b.status, COUNT(b.id) returns the status and its booking count.
+//    GROUP BY b.status puts bookings with the same status into one group.
+//    ORDER BY b.status sorts the groups by their status values.
     @Query("""
         SELECT b.status, COUNT(b.id)
         FROM Booking b
         GROUP BY b.status
-        ORDER BY b.status
+        ORDER BY b.status ASC
     """)
     List<Object[]> countBookingsGroupByStatus();
 

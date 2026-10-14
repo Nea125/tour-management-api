@@ -16,9 +16,5 @@ public interface ActivityService {
 
     void delete(Long id);
 
-    PageResponse<ActivityResponse> findByTourId(
-            Long tourId,
-            int page,
-            int size
-    );
+    PageResponse<ActivityResponse> findByTourId(Long tourId, int page, int size);
 }

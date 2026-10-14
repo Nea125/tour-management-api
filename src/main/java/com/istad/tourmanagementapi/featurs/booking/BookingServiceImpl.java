@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
 
         // Validate available seats
         validateAvailability(schedule, request.numberOfPeople());
-        // 4. Get current user
+        // Get current user
         String userId = AuthUtils.extractUserId();
 
         UserProfile user = getUserById(userId);
@@ -65,8 +66,8 @@ public class BookingServiceImpl implements BookingService {
                 .user(user).schedule(schedule)
                         .numberOfPeople(request.numberOfPeople())
                         .totalPrice(totalPrice)
-                        .bookingDate(LocalDate.now()
-                        ).status(BookingStatus.PENDING).build();
+                        .bookingDate(LocalDate.now())
+                        .status(BookingStatus.PENDING).build();
 
         //  Save booking
         Booking savedBooking = bookingRepository.save(booking);
@@ -95,7 +96,21 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toResponse(getById(id));
     }
 
+    // FIND BY STATUS
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BookingResponse> findByStatus(BookingStatus status, int page, int size) {
 
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "bookingDate")
+        );
+
+        return bookingRepository
+                .findAllByStatus(status, pageable)
+                .map(bookingMapper::toResponse);
+    }
     // FIND MY BOOKINGS
     @Override
     @Transactional(readOnly = true)
@@ -109,11 +124,22 @@ public class BookingServiceImpl implements BookingService {
                 .map(bookingMapper::toResponse)
                 .toList();
     }
+    // FIND BOOKING BY SCHEDULE
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponse> findByScheduleId(Long scheduleId) {
+        getScheduleById(scheduleId);
+
+        return bookingRepository
+                .findAllBySchedule_IdOrderByBookingDateDesc(scheduleId)
+                .stream()
+                .map(bookingMapper::toResponse)
+                .toList();
+    }
 
 
 
     // FIND ALL
-
     @Override
     @Transactional(readOnly = true)
     public Page<BookingResponse> findAll(int page, int size
@@ -127,7 +153,6 @@ public class BookingServiceImpl implements BookingService {
 
 
     // UPDATE
-
     @Override
     @Transactional
     public BookingResponse update(Long id, UpdateBookingRequest request
@@ -140,25 +165,12 @@ public class BookingServiceImpl implements BookingService {
                     "Paid booking cannot be updated"
             );
         }
-
-
-
-        bookingMapper.updateEntity(
-                request,
-                booking
-        );
-
-        Booking updated =
-                bookingRepository.save(
-                        booking
-                );
-
-        return bookingMapper.toResponse(
-                updated
-        );
+        bookingMapper.updateEntity(request, booking);
+        Booking updated = bookingRepository.save(booking);
+        return bookingMapper.toResponse(updated);
     }
 
-    // CANCEL
+    // CANCEL BOKING
     @Override
     @Transactional
     public BookingResponse cancel(Long id) {
@@ -185,7 +197,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toResponse(cancelled);
     }
 
-    // GET BOOKING
+    // GET BOOKING BY ID
 
     private Booking getById(Long id) {
 

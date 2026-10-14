@@ -2,7 +2,6 @@ package com.istad.tourmanagementapi.featurs.tour.entity;
 
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
 import com.istad.tourmanagementapi.featurs.activity.entity.Activity;
-import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.review.entity.Review;
 import com.istad.tourmanagementapi.featurs.tour_schedule.entity.TourSchedule;
 import jakarta.persistence.*;
@@ -52,13 +51,13 @@ public class Tour {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
-    @ManyToMany
-    @JoinTable(
-            name = "tour_medias",
-            joinColumns = @JoinColumn(name = "tour_id"),
-            inverseJoinColumns = @JoinColumn(name = "media_id")
+    @OneToMany(
+            mappedBy = "tour",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
-    private List<Media> media = new ArrayList<>();
+    @OrderBy("sortOrder ASC")
+    private List<TourMedia> images = new ArrayList<>();
 
     @Column(name = "is_deleted", nullable = false)
     Boolean isDeleted;

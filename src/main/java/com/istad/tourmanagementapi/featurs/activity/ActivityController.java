@@ -17,12 +17,10 @@ public class ActivityController {
     private final ActivityService activityService;
 
 
-    // CREATE
+    // CREATE ACTIVITY
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<ActivityResponse> create(
-            @Valid @RequestBody ActivityRequest request
-    ) {
+    public ApiResponse<ActivityResponse> create(@Valid @RequestBody ActivityRequest request) {
         return ApiResponse.<ActivityResponse>builder()
                 .status(1)
                 .message("Activity created successfully")
@@ -31,10 +29,9 @@ public class ActivityController {
     }
 
 
-    // FIND BY ID
+    // FIND ACTIVITY BY ID
     @GetMapping("/{id}")
-    public ApiResponse<ActivityResponse> findById(
-            @PathVariable Long id
+    public ApiResponse<ActivityResponse> findById(@PathVariable Long id
     ) {
         return ApiResponse.<ActivityResponse>builder()
                 .status(1)
@@ -44,7 +41,7 @@ public class ActivityController {
     }
 
 
-    // FIND ALL
+    // FIND ALL ACTIVITIES
     @GetMapping
     public ApiResponse<PageResponse<ActivityResponse>> findAll(
             @RequestParam(defaultValue = "0") int page,
@@ -66,7 +63,7 @@ public class ActivityController {
     }
 
 
-    // UPDATE
+    // UPDATE ACTIVITY
     @PutMapping("/{id}")
     public ApiResponse<ActivityResponse> update(
             @PathVariable Long id,
@@ -104,13 +101,7 @@ public class ActivityController {
         return ApiResponse.<PageResponse<ActivityResponse>>builder()
                 .status(1)
                 .message("Activities retrieved successfully")
-                .data(
-                        activityService.findByTourId(
-                                tourId,
-                                page,
-                                size
-                        )
-                )
+                .data(activityService.findByTourId(tourId, page, size))
                 .build();
     }
 }

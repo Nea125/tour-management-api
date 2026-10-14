@@ -46,11 +46,13 @@ public class UserProfile {
     @JoinColumn(name = "profile_image_id")
     private Media profileImage;
 
+    @Column(nullable = false)
     private String gender;
 
-    @Column(name = "date_of_birth")
+    @Column(name = "date_of_birth",nullable = false)
     private LocalDate dateOfBirth;
-    boolean isDeleted;
+
+    Boolean isDeleted;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
 

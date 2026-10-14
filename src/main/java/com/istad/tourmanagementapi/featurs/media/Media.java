@@ -2,7 +2,6 @@ package com.istad.tourmanagementapi.featurs.media;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Getter

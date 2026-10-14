@@ -34,7 +34,7 @@ public class DestinationController {
     //    Query/form parameter → @RequestParam
     //    multipart/form-data text fields → @ModelAttribute
     //    Uploaded files → @RequestParam MultipartFile
-
+     // CREATE DESTINATION
     public ApiResponse<DestinationResponse> create(
             @Valid @ModelAttribute CreateDestinationRequest request,
             @RequestParam(value = "images", required = false)
@@ -47,6 +47,7 @@ public class DestinationController {
                 .data(destinationService.create(request, images))
                 .build();
     }
+    // FIND DESTINATION BY ID
 
     @GetMapping("/{id}")
     public ApiResponse<DestinationResponse> findById(
@@ -60,7 +61,7 @@ public class DestinationController {
                         destinationService.findById(id))
                 .build();
     }
-
+// SEARCH DESTINATION BY NAME
     @GetMapping("/search")
     public ApiResponse<PageResponse<DestinationResponse>> search(
 
@@ -88,7 +89,7 @@ public class DestinationController {
                 .data(destinations)
                 .build();
     }
-
+// GET ALL DESTINATION
     @GetMapping
     public ApiResponse<PageResponse<DestinationResponse>> findAll(
 
@@ -114,18 +115,23 @@ public class DestinationController {
                 .data(destinations)
                 .build();
     }
-    @PatchMapping("/{id}")
+// UPDATE DESTINATION
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<DestinationResponse> update(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateDestinationRequest request
+            @ModelAttribute UpdateDestinationRequest request,
+            @RequestParam(value = "imageIds", required = false)
+            List<Integer> imageIds,
+            @RequestParam(value = "images", required = false)
+            List<MultipartFile> images
     ) {
         return ApiResponse.<DestinationResponse>builder()
                 .status(1)
                 .message("Destination updated successfully")
-                .data(destinationService.update(id, request))
+                .data(destinationService.update(id, request, imageIds, images))
                 .build();
     }
-
+// DELETE DESTINATION
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(
             @PathVariable Long id
@@ -138,7 +144,7 @@ public class DestinationController {
                 .message("Destination deleted successfully")
                 .build();
     }
-
+// GET DESTINATION IMAGE
     @GetMapping("/{destinationId}/media/{imageId}")
     public ResponseEntity<Resource> getDestinationImage(
             @PathVariable Long destinationId,
@@ -151,9 +157,8 @@ public class DestinationController {
         );
     }
 
-
-    @PutMapping(
-            value = "/{destinationId}/images/{imageId}",
+// UPDATE DESTINATION IMAGE
+    @PutMapping(value = "/{destinationId}/images/{imageId}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ApiResponse<MediaResponse> updateDestinationImage(

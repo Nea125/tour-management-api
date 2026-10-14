@@ -15,6 +15,6 @@ public record TourResponse(
         Integer maxParticipants,
         BigDecimal price,
         Boolean isDeleted,
-        List<Integer> imageIds
+        List<TourImageResponse> images
 ) {
 }

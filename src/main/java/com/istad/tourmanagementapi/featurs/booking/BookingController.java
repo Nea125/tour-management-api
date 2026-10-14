@@ -3,6 +3,7 @@ package com.istad.tourmanagementapi.featurs.booking;
 import com.istad.tourmanagementapi.featurs.booking.dto.BookingResponse;
 import com.istad.tourmanagementapi.featurs.booking.dto.CreateBookingRequest;
 import com.istad.tourmanagementapi.featurs.booking.dto.UpdateBookingRequest;
+import com.istad.tourmanagementapi.featurs.enums.BookingStatus;
 import com.istad.tourmanagementapi.featurs.utils.ApiResponse;
 import com.istad.tourmanagementapi.featurs.utils.PageMapper;
 import jakarta.validation.Valid;
@@ -44,7 +45,35 @@ public class BookingController {
                 .data(bookingService.findById(id))
                 .build();
     }
+    @GetMapping("/status/{status}")
+    public ApiResponse<?> findByStatus(
+            @PathVariable BookingStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
 
+        Page<BookingResponse> result = bookingService.findByStatus(status, page, size);
+
+        return ApiResponse.builder()
+                .status(1)
+                .message("Bookings retrieved successfully")
+                .data(result.getContent())
+                .pagination(pageMapper.mapToPageResponse(result))
+                .build();
+    }
+
+ // Find all bookings by schedule id
+    @GetMapping("/schedule/{scheduleId}")
+    public ApiResponse<List<BookingResponse>> findByScheduleId(
+            @PathVariable Long scheduleId
+    ) {
+        return ApiResponse
+                .<List<BookingResponse>>builder()
+                .status(1)
+                .message("Schedule bookings retrieved successfully")
+                .data(bookingService.findByScheduleId(scheduleId))
+                .build();
+    }
     @GetMapping("/my")
     public ApiResponse<List<BookingResponse>> findMyBookings() {
 
@@ -95,7 +124,7 @@ public class BookingController {
     ) {
         return ApiResponse
                 .<BookingResponse>builder()
-                .status(HttpStatus.OK.value())
+                .status(1)
                 .message("Booking cancelled successfully")
                 .data(bookingService.cancel(id))
                 .build();

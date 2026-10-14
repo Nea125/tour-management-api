@@ -4,7 +4,6 @@ import com.istad.tourmanagementapi.featurs.booking.BookingRepository;
 import com.istad.tourmanagementapi.featurs.destination.DestinationRepository;
 import com.istad.tourmanagementapi.featurs.enums.*;
 import com.istad.tourmanagementapi.featurs.profile.UserProfileRepository;
-import com.istad.tourmanagementapi.featurs.report.ReportService;
 import com.istad.tourmanagementapi.featurs.report.dto.*;
 import com.istad.tourmanagementapi.featurs.review.ReviewRepository;
 import com.istad.tourmanagementapi.featurs.tour.TourRepository;
@@ -34,51 +33,28 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ReportResponse getReport() {
         LocalDate today = LocalDate.now();
-        BigDecimal totalRevenue =
-                bookingRepository.getTotalRevenueByStatus(
-                        BookingStatus.PAID
-                );
+        BigDecimal totalRevenue = bookingRepository.getTotalRevenueByStatus(BookingStatus.PAID
+        );
 
-        Long totalBooking =
-                bookingRepository.countTotalBookings();
+        Long totalBooking = bookingRepository.countTotalBookings();
 
-        Long totalTour =
-                tourRepository.countTotalTours();
+        Long totalTour = tourRepository.countTotalTours();
 
-        Long totalDestination =
-                destinationRepository.countTotalDestinations();
+        Long totalDestination = destinationRepository.countTotalDestinations();
 
-        Double averageRating =
-                tourReviewRepository.getAverageRating();
+        Double averageRating = tourReviewRepository.getAverageRating();
 
-        Long totalCustomer =
-                userProfileRepository.countUsersByRoleAndStatus(
-                        UserRole.CUSTOMER,
-                        UserStatus.ACTIVE
-                );
+        Long totalCustomer = userProfileRepository.countUsersByRoleAndStatus(UserRole.CUSTOMER, UserStatus.ACTIVE);
 
-        Long totalGuide =
-                tourGuideRepository.countGuidesByStatus(
-                        TourGuideStatus.ACTIVE
-                );
+        Long totalGuide = tourGuideRepository.countGuidesByStatus(TourGuideStatus.ACTIVE);
 
 
-        // Upcoming tour count by next day not today
-        Long upcomingTour =
-                tourScheduleRepository.countUpcomingTours(
-                        today,
-                        today.plusDays(3)
-                );
+        // Upcoming tour count by next 3 day
+        Long upcomingTour = tourScheduleRepository.countUpcomingTours(today, today.plusDays(3));
 
-        Long completedTour =
-                tourScheduleRepository.countToursByStatus(
-                        TourScheduleStatus.COMPLETED
-                );
+        Long completedTour = tourScheduleRepository.countToursByStatus(TourScheduleStatus.COMPLETED);
 
-        Long cancelledBooking =
-                bookingRepository.countBookingsByStatus(
-                        BookingStatus.CANCELLED
-                );
+        Long cancelledBooking = bookingRepository.countBookingsByStatus(BookingStatus.CANCELLED);
 
         return new ReportResponse(
                 totalRevenue,
@@ -94,17 +70,17 @@ public class ReportServiceImpl implements ReportService {
         );
     }
 
+    // GET TOP TOUR
     @Override
     public List<TopTourResponse> getTopTours(int limit) {
 
-        PageRequest pageable =
-                PageRequest.of(0, limit);
+        PageRequest pageable = PageRequest.of(0, limit);
 
-        return bookingRepository.findTopPerformingTours(
-                pageable
+        return bookingRepository.findTopPerformingTours(pageable
         );
     }
 
+    // GET TOP DESTINATION
     @Override
     public List<TopDestinationResponse> getTopDestinations(
             int limit
@@ -118,28 +94,20 @@ public class ReportServiceImpl implements ReportService {
         );
     }
 
+    // GET BOOKING BY STATUS
     @Override
     public List<BookingStatusReportResponse> getBookingsByStatus() {
 
-        List<Object[]> results =
-                bookingRepository.countBookingsGroupByStatus();
+        List<Object[]> results = bookingRepository.countBookingsGroupByStatus();
 
-        List<BookingStatusReportResponse> response =
-                new ArrayList<>();
+        List<BookingStatusReportResponse> response = new ArrayList<>();
 
         for (Object[] result : results) {
 
-            BookingStatus status =
-                    (BookingStatus) result[0];
+            BookingStatus status = (BookingStatus) result[0];
+            Long total = (Long) result[1];
 
-            Long total =
-                    (Long) result[1];
-
-            response.add(
-                    new BookingStatusReportResponse(
-                            status,
-                            total
-                    )
+            response.add(new BookingStatusReportResponse(status, total)
             );
         }
 

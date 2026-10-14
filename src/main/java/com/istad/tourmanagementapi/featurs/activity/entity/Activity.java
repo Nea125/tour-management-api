@@ -30,7 +30,7 @@ public class Activity {
     private String description;
 // Creating a collection table for activity timelines
 // Each activity can have multiple timelines
-//Just separate the timelines from the activity
+
     @ElementCollection
     @CollectionTable(
             name = "activity_timelines",

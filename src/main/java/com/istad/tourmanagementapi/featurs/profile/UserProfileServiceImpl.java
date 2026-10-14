@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.RoleScopeResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -65,7 +64,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             );
         }
 
-        // 1. Create user in Keycloak
+        // Create user in Keycloak
 
         UserRepresentation keycloakUser = new UserRepresentation();
 
@@ -104,7 +103,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         // Create  Profile
         UserProfile userProfile = new UserProfile();
         userProfile.setId(keycloakUserId);
-        userProfile.setDeleted(false);
+        userProfile.setIsDeleted(false);
         userProfile.setFirstName(request.firstName());
         userProfile.setLastName(request.lastName());
         userProfile.setEmail(request.email());
@@ -306,16 +305,12 @@ public class UserProfileServiceImpl implements UserProfileService {
         return toResponse(updatedUserProfile);
     }
 
-
-
     // DELETE USER
-
     @Override
     public void delete(String id
     ) {
-
         UserProfile user = getById(id);
-        user.setDeleted(true);
+        user.setIsDeleted(true);
         userProfileRepository.save(user);
     }
 
@@ -408,57 +403,6 @@ public class UserProfileServiceImpl implements UserProfileService {
                         )
                 );
     }
-
-    private void updateUserRole(UserResource userResource, UserRole newRole
-    ) {
-
-        RoleScopeResource realmLevel = userResource.roles().realmLevel();
-
-        // Get current realm roles
-        List<RoleRepresentation> currentRoles =
-                realmLevel.listAll();
-
-        // Roles that belong to application
-        List<String> applicationRoles =
-                List.of(
-                        UserRole.ADMIN.name(),
-                        UserRole.GUIDE.name(),
-                        UserRole.MANAGER.name(),
-                        UserRole.CUSTOMER.name()
-
-
-                );
-
-        // Find existing application roles
-        List<RoleRepresentation> oldRoles =
-                currentRoles.stream()
-                        .filter(role ->
-                                applicationRoles.contains(
-                                        role.getName()
-                                )
-                        )
-                        .toList();
-
-        // Remove old application role
-        if (!oldRoles.isEmpty()) {
-            realmLevel.remove(oldRoles);
-        }
-
-        // Get new role from Keycloak
-        RoleRepresentation newRoleRepresentation =
-                keycloak
-                        .realm(realm)
-                        .roles()
-                        .get(newRole.name())
-                        .toRepresentation();
-
-        // Add new role
-        realmLevel.add(
-                List.of(newRoleRepresentation)
-        );
-    }
-
-
 
     @Override
     public UserProfileResponse updateUserStatus(String id, UpdateUserStatusRequest request) {

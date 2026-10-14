@@ -30,8 +30,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         activity.setTour(getTourById(request.tourId()));
 
-        return activityMapper.toResponse(
-                activityRepository.save(activity)
+        return activityMapper.toResponse(activityRepository.save(activity)
         );
     }
 
@@ -48,9 +47,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<ActivityResponse> activities =
-                activityRepository
-                        .findByIsDeletedFalse(pageable)
+        Page<ActivityResponse> activities = activityRepository.findByIsDeletedFalse(pageable)
                         .map(activityMapper::toResponse);
 
         return PageResponse.<ActivityResponse>builder()

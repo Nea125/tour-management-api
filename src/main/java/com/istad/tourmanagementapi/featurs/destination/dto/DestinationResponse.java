@@ -9,7 +9,7 @@ public record DestinationResponse(
         String country,
         Double latitude,
         Double longitude,
-        List<Integer> imageIds,
+        List<DestinationImageResponse> images,
         boolean isDeleted
 
 ) {

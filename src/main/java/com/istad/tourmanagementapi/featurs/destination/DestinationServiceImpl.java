@@ -1,9 +1,8 @@
 package com.istad.tourmanagementapi.featurs.destination;
 
-import com.istad.tourmanagementapi.featurs.destination.dto.CreateDestinationRequest;
-import com.istad.tourmanagementapi.featurs.destination.dto.DestinationResponse;
-import com.istad.tourmanagementapi.featurs.destination.dto.UpdateDestinationRequest;
+import com.istad.tourmanagementapi.featurs.destination.dto.*;
 import com.istad.tourmanagementapi.featurs.destination.entity.Destination;
+import com.istad.tourmanagementapi.featurs.destination.entity.DestinationMedia;
 import com.istad.tourmanagementapi.featurs.destination.mapper.DestinationMapper;
 import com.istad.tourmanagementapi.featurs.media.Media;
 import com.istad.tourmanagementapi.featurs.media.MediaService;
@@ -22,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,48 +38,49 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     @Transactional
-    public DestinationResponse create(
-            CreateDestinationRequest request,
-            List<MultipartFile> images
+    public DestinationResponse create(CreateDestinationRequest request, List<MultipartFile> images
     ) {
 
         // Check duplicate destination
-        if (destinationRepository.existsByNameIgnoreCase(
-                request.name()
-        )) {
-
+        if (destinationRepository.existsByNameIgnoreCase(request.name())) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "Destination already exists with name: "
-                            + request.name()
+                    "Destination already exists with name: " + request.name()
             );
         }
 
         // At least one image is required
         if (images == null || images.isEmpty()) {
-
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "At least one image is required"
             );
         }
 
-        // Map request to entity
-        Destination destination =
-                destinationMapper.toEntity(request);
+        Destination destination = destinationMapper.toEntity(request);
 
         destination.setDeleted(false);
 
         // Upload images
-        List<Media> medias =
-                mediaService.uploadMediaEntities(images);
+        List<Media> medias = mediaService.uploadMediaEntities(images);
 
-        // Connect images to destination
-        destination.setMedia(medias);
+        // Save images with sort order
+        List<DestinationMedia> destinationImages = new ArrayList<>();
 
-        // Save destination
-        Destination saved =
-                destinationRepository.save(destination);
+        for (int i = 0; i < medias.size(); i++) {
+
+            DestinationMedia destinationMedia = new DestinationMedia();
+
+            destinationMedia.setDestination(destination);
+            destinationMedia.setMedia(medias.get(i));
+            destinationMedia.setSortOrder(i + 1);
+
+            destinationImages.add(destinationMedia);
+        }
+
+        destination.setImages(destinationImages);
+
+        Destination saved = destinationRepository.save(destination);
 
         return destinationMapper.toResponse(saved);
     }
@@ -87,27 +89,18 @@ public class DestinationServiceImpl implements DestinationService {
     @Override
     @Transactional(readOnly = true)
     public DestinationResponse findById(Long id) {
-
         Destination destination = getById(id);
-
         return destinationMapper.toResponse(destination);
     }
 
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<DestinationResponse> findAll(
-            int page,
-            int size
-    ) {
+    public PageResponse<DestinationResponse> findAll(int page, int size) {
 
-        Pageable pageable =
-                PageRequest.of(page, size);
-
+        Pageable pageable = PageRequest.of(page, size);
         Page<DestinationResponse> destinations =
-                destinationRepository
-                        .findByIsDeletedFalse(pageable)
-                        .map(destinationMapper::toResponse);
+                destinationRepository.findByIsDeletedFalse(pageable).map(destinationMapper::toResponse);
 
         return PageResponse.<DestinationResponse>builder()
                 .items(destinations.getContent())
@@ -121,15 +114,9 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<DestinationResponse> search(
-            String name,
-            int page,
-            int size
+    public PageResponse<DestinationResponse> search(String name, int page, int size
     ) {
-
-        Pageable pageable =
-                PageRequest.of(page, size);
-
+        Pageable pageable = PageRequest.of(page, size);
         Page<DestinationResponse> destinations =
                 destinationRepository
                         .findByIsDeletedFalseAndNameContainingIgnoreCase(
@@ -146,25 +133,6 @@ public class DestinationServiceImpl implements DestinationService {
                 .totalPages(destinations.getTotalPages())
                 .build();
     }
-
-
-    @Override
-    @Transactional
-    public DestinationResponse update(
-            Long id,
-            UpdateDestinationRequest request
-    ) {
-
-        Destination destination = getById(id);
-
-        destinationMapper.updateEntity(
-                request,
-                destination
-        );
-
-        return destinationMapper.toResponse(destination);
-    }
-
 
     @Override
     @Transactional
@@ -246,5 +214,57 @@ public class DestinationServiceImpl implements DestinationService {
                 media.getId(),
                 image
         );
+    }
+
+
+    @Override
+    @Transactional
+    public DestinationResponse update(Long id, UpdateDestinationRequest request, List<Integer> imageIds, List<MultipartFile> images
+    ) {
+
+        Destination destination = getById(id);
+        // Update text fields
+        destinationMapper.updateEntity(request, destination);
+
+        // Replace images, keeping the same position
+        if (images != null && !images.isEmpty()) {
+
+            if (imageIds == null) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalide Image Id"
+                );
+            }
+
+            Set<Integer> owned = destination.getImages().stream()
+                    .map(dm -> dm.getMedia().getId())
+                    .collect(Collectors.toSet());
+
+            Set<Integer> seen = new HashSet<>();
+
+            for (Integer imageId : imageIds) {
+                if (!owned.contains(imageId)) {
+                    throw new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Image " + imageId
+                                    + " does not belong to this destination"
+                    );
+                }
+                if (!seen.add(imageId)) {
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Duplicate imageId: " + imageId
+                    );
+                }
+            }
+
+
+            // Save image with the same possition
+            for (int i = 0; i < imageIds.size(); i++) {
+                mediaService.updateMedia(imageIds.get(i), images.get(i));
+            }
+        }
+
+        return destinationMapper.toResponse(destination);
     }
 }

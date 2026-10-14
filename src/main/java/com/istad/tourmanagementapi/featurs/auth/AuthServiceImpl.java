@@ -3,6 +3,7 @@ package com.istad.tourmanagementapi.featurs.auth;
 
 import com.istad.tourmanagementapi.featurs.auth.dto.RegisterRequest;
 import com.istad.tourmanagementapi.featurs.auth.dto.RegisterResponse;
+import com.istad.tourmanagementapi.featurs.enums.UserRole;
 import com.istad.tourmanagementapi.featurs.enums.UserStatus;
 import com.istad.tourmanagementapi.featurs.profile.UserProfileRepository;
 import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
@@ -45,9 +46,6 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(registerRequest.email());
         user.setFirstName(registerRequest.firstName());
         user.setLastName(registerRequest.lastName());
-
-        Map<String, List<String>> attributes = new HashMap<>();
-        user.setAttributes(attributes);
 
         // Validate password
         if (!registerRequest.password().equals(registerRequest.confirmPassword())) {
@@ -127,7 +125,6 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-
     private void saveUserProfile(
             String username,
             RegisterRequest request
@@ -144,11 +141,10 @@ public class AuthServiceImpl implements AuthService {
         userProfile.setPhone(request.phone());
         userProfile.setGender(request.gender());
         userProfile.setDateOfBirth(request.dateOfBirth());
-//        userProfile.setProfileImage(request.profileImage());
-
-        // If status is required
+//      userProfile.setProfileImage(request.profileImage());
+        userProfile.setRole(UserRole.CUSTOMER);
         userProfile.setStatus(UserStatus.ACTIVE);
-
+userProfile.setIsDeleted(false);
         userProfileRepository.save(userProfile);
     }
     private UsersResource getUsersResource() {
@@ -161,27 +157,5 @@ public class AuthServiceImpl implements AuthService {
 
 
 
-    private void assignRoles(String username, UsersResource usersResource) {
-        // Start assigning role (USER, CUSTOMER)
-        // Load created user by username from Keycloak
-        UserRepresentation createdUser = usersResource
-                .search(username)
-                .getFirst();
 
-        UserResource keycloakUser = usersResource.get(createdUser.getId());
-
-        // Create RoleRepresentation
-        RolesResource rolesResource = keycloak.realm(realm).roles();
-        RoleRepresentation roleUser = rolesResource
-                .get(KeycloakRoleEnum.USER.toString())
-                .toRepresentation();
-        RoleRepresentation roleCustomer = rolesResource
-                .get(KeycloakRoleEnum.CUSTOMER.toString())
-                .toRepresentation();
-
-        List<RoleRepresentation> roles = List.of(roleUser, roleCustomer);
-        keycloakUser.roles()
-                .realmLevel()
-                .add(roles);
-    }
 }
