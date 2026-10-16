@@ -11,21 +11,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-
-
-    // Get bookings by status
+    // Get all bookings with a specific status
     Page<Booking> findAllByStatus(BookingStatus status, Pageable pageable);
-    // All bookings of one schedule sort by DESC date
+
+    // Get all bookings belonging to a specific schedule sort by DESC date
     List<Booking> findAllBySchedule_IdOrderByBookingDateDesc(Long scheduleId);
-    // Get all bookings belonging to a specific user sort by DESC date
+
+   // Get all bookings belonging to a specific user sort by DESC date
     List<Booking> findAllByUser_IdOrderByBookingDateDesc(String userId);
 
-    // Get total number of paid people for a specific schedule
+    // Get total number of people booked for a specific schedule
     @Query("""
         SELECT COALESCE(SUM(b.numberOfPeople), 0)
         FROM Booking b
@@ -67,55 +66,112 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     );
 
 
-    //Get booking counts for all statuses in a single query.
-//    SELECT b.status, COUNT(b.id) returns the status and its booking count.
-//    GROUP BY b.status puts bookings with the same status into one group.
-//    ORDER BY b.status sorts the groups by their status values.
+// Get number of bookings grouped by status
+    // return field status and total
+//SELECT status as status, COUNT(bookings.status) as total
+//    FROM bookings
+//    GROUP BY status;
     @Query("""
-        SELECT b.status, COUNT(b.id)
-        FROM Booking b
-        GROUP BY b.status
-        ORDER BY b.status ASC
+        SELECT booking.status as status, COUNT(booking.status) as total
+        FROM Booking booking
+        GROUP BY booking.status
     """)
     List<Object[]> countBookingsGroupByStatus();
 
+    // Get top-performing tours based on paid bookings
+//    SELECT
+//    t.id AS id,
+//    t.title AS title,
+//    COUNT(b.id) AS total_booking,
+//    COALESCE(
+//            (
+//            SELECT AVG(r.rating)
+//    FROM reviews r
+//    WHERE r.tour_id = t.id
+//    AND r.is_deleted = FALSE
+//            ),
+//                    0.0
+//                    ) AS average_rating,
+//    COALESCE(SUM(b.total_price), 0) AS total_revenue
+//    FROM bookings b
+//    JOIN tour_schedules s ON b.tour_schedule_id = s.id
+//    JOIN tours t ON s.tour_id = t.id
+//    WHERE b.status = 'PAID'
+//    GROUP BY t.id, t.title
+//    ORDER BY SUM(b.total_price) DESC, t.id ASC
+//    LIMIT 10;
 
-    // Get top performing tours based on paid bookings
-    // Also calculate total revenue for each tour
     @Query("""
-        SELECT new com.istad.tourmanagementapi.featurs.report.dto.TopTourResponse(
-            t.id,
-            t.title,
-            COUNT(b.id),
-            0.0,
-            COALESCE(SUM(b.totalPrice), 0)
-        )
-        FROM Booking b
-        JOIN b.schedule s
-        JOIN s.tour t
-        WHERE b.status = com.istad.tourmanagementapi.featurs.enums.BookingStatus.PAID
-        GROUP BY t.id, t.title
-        ORDER BY COUNT(b.id) DESC
-    """)
-    List<TopTourResponse> findTopPerformingTours(
-            Pageable pageable
-    );
+    SELECT new com.istad.tourmanagementapi.featurs.report.dto.TopTourResponse(
+        tour.id as id,
+        tour.title as title,
+        COUNT(booking) as total_booking,
+        COALESCE(
+            (
+                SELECT AVG(review.rating)
+                FROM Review review
+                WHERE review.tour.id = tour.id
+                  AND review.isDeleted = false
+            ) ,
+            0.0
+        ) as average_rating,
+
+        COALESCE(SUM(booking.totalPrice), 0) as total_revenue
+    )
+    FROM Booking booking
+    JOIN booking.schedule schedule
+    JOIN schedule.tour tour
+    WHERE booking.status = com.istad.tourmanagementapi.featurs.enums.BookingStatus.PAID
+    AND schedule.isDeleted=false
+    AND tour.isDeleted=false
+     /*
+          group all paid bookings by tour ID and tour name
+      */
+    GROUP BY tour.id, tour.title
+
+    ORDER BY SUM(booking.totalPrice) DESC,tour.id ASC
+""")
+    List<TopTourResponse> findTopPerformingTours(Pageable pageable);
 
 
-    // Get top destinations based on paid bookings
+    // Get top destinations based on paid bookings order it by more booking come first
+
+//    SELECT
+//    d.id AS destination_id,
+//    d.name AS destination_name,
+//    COUNT(b.id) AS total_booking
+//    FROM bookings b
+//    JOIN tour_schedules s
+//    ON s.id = b.tour_schedule_id
+//    JOIN tours t
+//    ON t.id = s.tour_id
+//    JOIN destinations d
+//    ON d.id = t.destination_id
+//    WHERE b.status = 'PAID'
+//    AND d.is_deleted = FALSE
+//    GROUP BY d.id, d.name
+//    ORDER BY COUNT(b.id) DESC
+//    LIMIT 10;
     @Query("""
         SELECT new com.istad.tourmanagementapi.featurs.report.dto.TopDestinationResponse(
-            d.id,
-            d.name,
-            COUNT(b.id)
+            destination.id as destination_id,
+            destination.name as destination_name,
+            COUNT(booking) as total_booking
         )
-        FROM Booking b
-        JOIN b.schedule s
-        JOIN s.tour t
-        JOIN t.destination d
-        WHERE b.status = com.istad.tourmanagementapi.featurs.enums.BookingStatus.PAID
-        GROUP BY d.id, d.name
-        ORDER BY COUNT(b.id) DESC
+        FROM Booking booking
+        JOIN booking.schedule schedule
+        JOIN schedule.tour tour
+        JOIN tour.destination destination
+ 
+        WHERE booking.status = com.istad.tourmanagementapi.featurs.enums.BookingStatus.PAID
+        AND destination.isDeleted = false
+        AND tour.isDeleted = false
+        AND schedule.isDeleted = false
+            /*
+                group all paid bookings by destination ID and destination name
+             */
+        GROUP BY destination.id, destination.name
+        ORDER BY COUNT(booking) DESC
     """)
     List<TopDestinationResponse> findTopDestinations(
             Pageable pageable

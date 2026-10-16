@@ -6,7 +6,7 @@ import com.istad.tourmanagementapi.featurs.payment.dto.PaymentResponse;
 
 public interface PaymentService {
 
-    PaymentResponse pay(PaymentRequest request);
+    PaymentResponse createPayment(PaymentRequest request);
 
-    CanPayResponse canPay(Long bookingId);
+    CanPayResponse canPayBooking(Long bookingId);
 }

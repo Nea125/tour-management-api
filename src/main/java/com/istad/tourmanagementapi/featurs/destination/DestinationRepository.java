@@ -24,21 +24,22 @@ public interface DestinationRepository
 
     // GET DESTINATION IMAGE BY ID
     @Query("""
-    SELECT dm.media
-    FROM DestinationMedia dm
-    WHERE dm.destination.id = :destinationId
-    AND dm.media.id = :imageId
-    AND dm.destination.isDeleted = false
+    SELECT destinationMedia.media
+    FROM DestinationMedia destinationMedia
+    WHERE destinationMedia.destination.id = :destinationId
+    AND destinationMedia.media.id = :imageId
+    AND destinationMedia.destination.isDeleted = false
     """)
     Optional<Media> findMediaByDestinationIdAndImageId(
             @Param("destinationId") Long destinationId,
             @Param("imageId") Integer imageId
     );
+
 // COUNT TOTAL DESTINATION
     @Query("""
-    SELECT COUNT(d)
-    FROM Destination d
-    WHERE d.isDeleted = false
+    SELECT COUNT(destination)
+    FROM Destination destination
+    WHERE destination.isDeleted = false
 """)
     Long countTotalDestinations();
 

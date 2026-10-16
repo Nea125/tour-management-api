@@ -38,11 +38,9 @@ public class TourScheduleServiceImpl implements TourScheduleService {
     private final BookingRepository bookingRepository;
 
 
-    // CREATE
+    // CREATE TOUR SCHEDULE
     @Override
-    public TourScheduleResponse create(
-            CreateTourScheduleRequest request
-    ) {
+    public TourScheduleResponse create(CreateTourScheduleRequest request) {
 
         Tour tour = getTourById(request.tourId());
 
@@ -50,9 +48,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         // startDate = 2026-09-20
         // durationDays = 3
         // expectedEndDate = duration-1 = 2026-09-22
-        LocalDate expectedEndDate =
-                request.startDate()
-                        .plusDays(tour.getDurationDays() - 1);
+        LocalDate expectedEndDate = request.startDate().plusDays(tour.getDurationDays() - 1);
 
         // Validate end date
         if (!request.endDate().equals(expectedEndDate)) {
@@ -65,21 +61,13 @@ public class TourScheduleServiceImpl implements TourScheduleService {
             );
         }
 
-        TourSchedule schedule =
-                scheduleMapper.toEntity(request);
-
+        TourSchedule schedule = scheduleMapper.toEntity(request);
         schedule.setTour(tour);
         schedule.setCapacity(tour.getMaxParticipants());
 
-        schedule.setStatus(
-                TourScheduleStatus.OPEN
-        );
-
+        schedule.setStatus(TourScheduleStatus.OPEN);
         schedule.setDeleted(false);
-
-        TourSchedule savedSchedule =
-                scheduleRepository.save(schedule);
-
+        TourSchedule savedSchedule = scheduleRepository.save(schedule);
         return toResponse(savedSchedule);
     }
 
@@ -109,9 +97,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
             int size
     ) {
 
-        Pageable pageable =
-                PageRequest.of(page, size);
-
+        Pageable pageable = PageRequest.of(page, size);
         Page<TourScheduleResponse> schedules =
                 scheduleRepository
                         .findAllByIsDeletedFalse(pageable)
@@ -129,9 +115,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
 
     // UPDATE
     @Override
-    public TourScheduleResponse update(
-            Long id,
-            PatchTourScheduleRequest request
+    public TourScheduleResponse update(Long id, PatchTourScheduleRequest request
     ) {
 
         TourSchedule schedule = getById(id);
@@ -244,15 +228,9 @@ public class TourScheduleServiceImpl implements TourScheduleService {
             Long guideId
     ) {
 
-        TourSchedule schedule =
-                getById(scheduleId);
+        TourSchedule schedule = getById(scheduleId);
 
-        TourGuide guide =
-                tourGuideRepository
-                        .findByIdAndStatus(
-                                guideId,
-                                TourGuideStatus.ACTIVE
-                        )
+        TourGuide guide = tourGuideRepository.findByIdAndStatus(guideId, TourGuideStatus.ACTIVE)
                         .orElseThrow(() ->
                                 new ResponseStatusException(
                                         HttpStatus.NOT_FOUND,
@@ -270,9 +248,8 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         }
 
         // Check schedule conflict
-        boolean conflict =
-                scheduleRepository.existsGuideScheduleConflict(
-                        guideId,
+        // Check if there is another schedule assigned to the same guide during the same date range
+        boolean conflict = scheduleRepository.existsGuideScheduleConflict(guideId,
                         scheduleId,
                         schedule.getStartDate(),
                         schedule.getEndDate()
@@ -298,9 +275,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
             Long guideId
     ) {
 
-        TourSchedule schedule =
-                getById(scheduleId);
-
+        TourSchedule schedule = getById(scheduleId);
         TourGuide guide =
                 tourGuideRepository
                         .findById(guideId)
@@ -335,17 +310,8 @@ public class TourScheduleServiceImpl implements TourScheduleService {
 
         // Check if tour exists
         getTourById(tourId);
-
-        Pageable pageable =
-                PageRequest.of(page, size);
-
-        Page<TourScheduleResponse> schedules =
-                scheduleRepository
-                        .findAllByTourIdAndIsDeletedFalse(
-                                tourId,
-                                pageable
-                        )
-                        .map(this::toResponse);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TourScheduleResponse> schedules = scheduleRepository.findAllByTourIdAndIsDeletedFalse(tourId, pageable).map(this::toResponse);
 
         return PageResponse.<TourScheduleResponse>builder()
                 .items(schedules.getContent())
@@ -363,9 +329,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
     public List<TourGuideResponse> findGuidesByScheduleId(
             Long scheduleId
     ) {
-
         getById(scheduleId);
-
         return scheduleRepository
                 .findGuidesByScheduleId(scheduleId)
                 .stream()
@@ -378,18 +342,11 @@ public class TourScheduleServiceImpl implements TourScheduleService {
     private TourScheduleResponse toResponse(
             TourSchedule schedule
     ) {
-        Integer bookedPeople =
-                bookingRepository.countPaidPeopleByScheduleId(
-                        schedule.getId()
-                );
+        Integer bookedPeople = bookingRepository.countPaidPeopleByScheduleId(schedule.getId());
 
-        Integer availableCapacity = Math.max(
-                0,
-                schedule.getCapacity() - bookedPeople
-        );
+        Integer availableCapacity = Math.max(0, schedule.getCapacity() - bookedPeople);
 
-        TourScheduleResponse response =
-                scheduleMapper.toResponse(schedule);
+        TourScheduleResponse response = scheduleMapper.toResponse(schedule);
 
         return new TourScheduleResponse(
                 response.id(),

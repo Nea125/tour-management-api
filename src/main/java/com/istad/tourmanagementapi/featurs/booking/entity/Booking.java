@@ -49,12 +49,12 @@ public class Booking {
     @Column(nullable = false)
     private BookingStatus status;
 
- // Relationships with user [Many to one: One booking has one user]
+ // Relationships with user [Many to one: Much booking has one user]
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserProfile user;
 
-    // Relationships with tourSchedule [Many to one: One booking has one tourSchedule]
+    // Relationships with tourSchedule [Many to one: Much booking has one tourSchedule]
     @ManyToOne
     @JoinColumn(name = "tour_schedule_id", nullable = false)
     private TourSchedule schedule;

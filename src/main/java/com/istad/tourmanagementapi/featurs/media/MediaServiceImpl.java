@@ -37,7 +37,7 @@ public class MediaServiceImpl implements MediaService {
 
     private static final String MB = "MB";
 
-
+// UPLOAD MEDIA
     @Override
     @Transactional
     public List<Media> uploadMediaEntities(List<MultipartFile> files) {
@@ -111,6 +111,8 @@ public class MediaServiceImpl implements MediaService {
 
         return media;
     }
+
+    // GET MEDIA BY ID
     @Override
     @Transactional(readOnly = true)
     public Resource getMediaResource(Integer mediaId) {
@@ -123,13 +125,8 @@ public class MediaServiceImpl implements MediaService {
                         )
                 );
 
-        Path path = Paths.get(
-                mediaLocation,
-                media.getName() + "." + media.getExtension()
-        );
-
+        Path path = Paths.get(mediaLocation, media.getName() + "." + media.getExtension());
         Resource resource = new FileSystemResource(path);
-
         if (!resource.exists() || !resource.isReadable()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
@@ -156,6 +153,7 @@ public class MediaServiceImpl implements MediaService {
                 .build();
     }
 
+    // UPDATE MEDIA
     @Override
     @Transactional
     public MediaResponse updateMedia(
@@ -187,8 +185,7 @@ public class MediaServiceImpl implements MediaService {
             );
         }
 
-        String oldFileName =
-                media.getName() + "." + media.getExtension();
+        String oldFileName = media.getName() + "." + media.getExtension();
 
         Path oldPath = Paths.get(
                 mediaLocation,
@@ -199,13 +196,9 @@ public class MediaServiceImpl implements MediaService {
                 originalFilename.lastIndexOf(".") + 1
         );
 
-        String newFileName =
-                media.getName() + "." + extension;
+        String newFileName = media.getName() + "." + extension;
 
-        Path newPath = Paths.get(
-                mediaLocation,
-                newFileName
-        );
+        Path newPath = Paths.get(mediaLocation, newFileName);
 
         try {
 
@@ -213,10 +206,7 @@ public class MediaServiceImpl implements MediaService {
             Files.deleteIfExists(oldPath);
 
             // Save new file using the SAME media ID/name
-            Files.copy(
-                    image.getInputStream(),
-                    newPath
-            );
+            Files.copy(image.getInputStream(), newPath);
 
         } catch (IOException e) {
 

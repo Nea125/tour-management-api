@@ -100,7 +100,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         String keycloakUserId = CreatedResponseUtil.getCreatedId(response);
         assignRealmRoles(keycloakUserId, request.role());
-        // Create  Profile
+        // Create Profile
         UserProfile userProfile = new UserProfile();
         userProfile.setId(keycloakUserId);
         userProfile.setIsDeleted(false);
@@ -217,6 +217,8 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         return toResponse(updatedUser);
     }
+
+    // UPDATE USER ROLE
     @Override
     public UserProfileResponse updateUserRole(
             String id,

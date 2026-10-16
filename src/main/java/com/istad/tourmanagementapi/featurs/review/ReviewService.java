@@ -13,20 +13,11 @@ public interface ReviewService {
 
     ReviewResponse findByBookingId(Long bookingId);
 
-    PageResponse<ReviewResponse> findByTourId(
-            Long tourId,
-            int page,
-            int size
-    );
+    PageResponse<ReviewResponse> findByTourId(Long tourId, int page, int size);
 
     void delete(Long id);
 
-    PageResponse<ReviewResponse> findMyReviews(
-            int page,
-            int size
+    PageResponse<ReviewResponse> findMyReviews(int page, int size
     );
-    ReviewResponse update(
-            Long id,
-            ReviewUpdateRequest request
-    );
+    ReviewResponse update(Long id, ReviewUpdateRequest request);
 }

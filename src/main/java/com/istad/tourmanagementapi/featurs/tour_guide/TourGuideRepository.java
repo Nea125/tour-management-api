@@ -35,6 +35,7 @@ public interface TourGuideRepository
             Pageable pageable
     );
 
+    // COUNT TOUR GUIDE BY STATUS
     @Query("""
     SELECT COUNT(g)
     FROM TourGuide g

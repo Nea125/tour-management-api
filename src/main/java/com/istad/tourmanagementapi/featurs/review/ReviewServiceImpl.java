@@ -38,7 +38,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public ReviewResponse create(ReviewRequest request) {
-
+// Extract user id from token
         String userId = AuthUtils.extractUserId();
 
         Booking booking = bookingRepository.findById(request.bookingId())
@@ -118,6 +118,7 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.toResponse(review);
     }
 
+    // FIND BY BOOKING ID
     @Override
     public ReviewResponse findByBookingId(Long bookingId) {
 
@@ -133,6 +134,8 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.toResponse(review);
     }
 
+
+    // DELETE - SOFT DELETE
     @Override
     @Transactional
     public void delete(Long id) {
@@ -155,7 +158,9 @@ public class ReviewServiceImpl implements ReviewService {
         boolean isOwner = review.getUser().getId().equals(userId);
 
 
-        // Only the review owner and admin,manager can delete it
+        // Only the review owner and admin, manager can delete it
+        // All three conditions is true this code will be executed
+        // like is ROLE CUSTOMER that not owner
         if (!isAdmin && !isOwner && !isManager) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
@@ -168,11 +173,9 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.save(review);
     }
 
+    // FIND BY TOUR ID
     @Override
-    public PageResponse<ReviewResponse> findByTourId(
-            Long tourId,
-            int page,
-            int size
+    public PageResponse<ReviewResponse> findByTourId(Long tourId, int page, int size
     ) {
 
         // Check whether tour exists
@@ -184,18 +187,9 @@ public class ReviewServiceImpl implements ReviewService {
                         )
                 );
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(Sort.Direction.DESC, "createdAt")
-        );
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ReviewResponse> reviews =
-                reviewRepository
-                        .findByTour_IdAndIsDeletedFalse(
-                                tourId,
-                                pageable
-                        )
-                        .map(reviewMapper::toResponse);
+                reviewRepository.findByTour_IdAndIsDeletedFalse(tourId, pageable).map(reviewMapper::toResponse);
 
         return PageResponse.<ReviewResponse>builder()
                 .items(reviews.getContent())
@@ -206,27 +200,18 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
     }
 
+
+    // FIND MY REVIEWS BY TOKEN
     @Override
-    public PageResponse<ReviewResponse> findMyReviews(
-            int page,
-            int size
+    public PageResponse<ReviewResponse> findMyReviews(int page, int size
     ) {
 
         String userId = AuthUtils.extractUserId();
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(Sort.Direction.DESC, "createdAt")
-        );
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Page<ReviewResponse> reviews =
-                reviewRepository
-                        .findByUser_IdAndIsDeletedFalse(
-                                userId,
-                                pageable
-                        )
-                        .map(reviewMapper::toResponse);
+                reviewRepository.findByUser_IdAndIsDeletedFalse(userId, pageable).map(reviewMapper::toResponse);
 
         return PageResponse.<ReviewResponse>builder()
                 .items(reviews.getContent())
@@ -237,6 +222,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
     }
 
+    // UPDATE REVIEW
     @Override
     @Transactional
     public ReviewResponse update(

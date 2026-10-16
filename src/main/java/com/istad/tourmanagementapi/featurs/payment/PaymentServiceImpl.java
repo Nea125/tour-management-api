@@ -33,17 +33,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentResponse pay(PaymentRequest request) {
+    public PaymentResponse createPayment(PaymentRequest request) {
 
-        Booking booking =
-                bookingRepository.findById(request.bookingId())
+        // Check if booking exists
+        Booking booking = bookingRepository.findById(request.bookingId())
                         .orElseThrow(() ->
                                 new ResponseStatusException(
                                         HttpStatus.NOT_FOUND,
                                         "Booking not found"
                                 )
                         );
-
+// Check if booking is pending
         if (booking.getStatus() != BookingStatus.PENDING) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -51,8 +51,8 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
-        if (paymentRepository.existsByBooking_Id(
-                booking.getId()
+        // Check if payment has already been made
+        if (paymentRepository.existsByBooking_Id(booking.getId()
         )) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -88,16 +88,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     private void validateCapacity(Booking booking) {
 
-        TourSchedule schedule =
-                booking.getSchedule();
+        TourSchedule schedule = booking.getSchedule();
 
-        Integer bookedPeople =
-                bookingRepository.countPaidPeopleByScheduleId(
-                        schedule.getId()
-                );
+        Integer bookedPeople = bookingRepository.countPaidPeopleByScheduleId(schedule.getId());
 
-        int availableCapacity =
-                schedule.getCapacity() - bookedPeople;
+        int availableCapacity = schedule.getCapacity() - bookedPeople;
 
         if (availableCapacity <= 0) {
 
@@ -124,18 +119,12 @@ public class PaymentServiceImpl implements PaymentService {
             TourSchedule schedule
     ) {
 
-        Integer bookedPeople =
-                bookingRepository.countPaidPeopleByScheduleId(
-                        schedule.getId()
-                );
-
+        Integer bookedPeople = bookingRepository.countPaidPeopleByScheduleId(schedule.getId());
+        // Check if the schedule is fully booked make schedule status to full
         if (bookedPeople >= schedule.getCapacity()) {
-            schedule.setStatus(
-                    TourScheduleStatus.FULL
-            );
+            schedule.setStatus(TourScheduleStatus.FULL);
         } else {
-            schedule.setStatus(
-                    TourScheduleStatus.OPEN
+            schedule.setStatus(TourScheduleStatus.OPEN
             );
         }
 
@@ -152,24 +141,24 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public CanPayResponse canPay(Long bookingId) {
+    public CanPayResponse canPayBooking(Long bookingId) {
 
-        Booking booking =
-                bookingRepository.findById(bookingId)
+        // Check if booking exists
+        Booking booking = bookingRepository.findById(bookingId)
                         .orElseThrow(() ->
                                 new ResponseStatusException(
                                         HttpStatus.NOT_FOUND,
                                         "Booking not found"
                                 )
                         );
-
+        // Check if booking is pending
         if (booking.getStatus() != BookingStatus.PENDING) {
             return new CanPayResponse(
                     false,
                     "Booking is not pending"
             );
         }
-
+        // Check if payment has already been made
         if (paymentRepository.existsByBooking_Id(bookingId)) {
             return new CanPayResponse(
                     false,
@@ -177,9 +166,8 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
-        TourSchedule schedule =
-                booking.getSchedule();
-
+        TourSchedule schedule = booking.getSchedule();
+        // Check if tour schedule is not  open
         if (schedule.getStatus() != TourScheduleStatus.OPEN) {
             return new CanPayResponse(
                     false,
@@ -188,7 +176,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         LocalDate today = LocalDate.now();
-
+        // Check if tour schedule has started
         if (schedule.getStartDate().isBefore(today)) {
             return new CanPayResponse(
                     false,
@@ -196,22 +184,14 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
-        Integer bookedPeople =
-                bookingRepository.countPaidPeopleByScheduleId(
-                        schedule.getId()
-                );
+        Integer bookedPeople = bookingRepository.countPaidPeopleByScheduleId(schedule.getId());
 
-        int availableCapacity =
-                Math.max(
-                        0,
-                        schedule.getCapacity() - bookedPeople
-                );
+        // Check available capacity before payment
+        int availableCapacity = Math.max(0, schedule.getCapacity() - bookedPeople);
 
         if (availableCapacity <= 0) {
 
-            schedule.setStatus(
-                    TourScheduleStatus.FULL
-            );
+            schedule.setStatus(TourScheduleStatus.FULL);
 
             tourScheduleRepository.save(schedule);
 
@@ -221,6 +201,7 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
+        // Check if the number of people exceeds the available capacity
         if (booking.getNumberOfPeople() > availableCapacity) {
             return new CanPayResponse(
                     false,

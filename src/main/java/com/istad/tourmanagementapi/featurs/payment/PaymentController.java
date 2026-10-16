@@ -18,22 +18,25 @@ public class PaymentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<PaymentResponse> pay(@Valid @RequestBody PaymentRequest request
+
+    // CREATE PAYMENT
+    public ApiResponse<PaymentResponse> createPayment(@Valid @RequestBody PaymentRequest request
     ) {
 
         return ApiResponse
                 .<PaymentResponse>builder()
                 .status(1)
                 .message("Payment successful")
-                .data(paymentService.pay(request)
+                .data(paymentService.createPayment(request)
                 ).build();
     }
-// Check whether booking is available to pay
+
+// CHECK IF PAYMENT IS POSSIBLE TO PAY
     @GetMapping("/booking/{bookingId}/can-pay")
     public ApiResponse<CanPayResponse> canPay(@PathVariable Long bookingId
     ) {
 
-        CanPayResponse response = paymentService.canPay(bookingId);
+        CanPayResponse response = paymentService.canPayBooking(bookingId);
         return ApiResponse
                 .<CanPayResponse>builder()
                 .status(1)

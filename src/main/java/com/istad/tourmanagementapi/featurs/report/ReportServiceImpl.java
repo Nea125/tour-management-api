@@ -33,27 +33,29 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ReportResponse getReport() {
         LocalDate today = LocalDate.now();
-        BigDecimal totalRevenue = bookingRepository.getTotalRevenueByStatus(BookingStatus.PAID
-        );
 
+        // Get total revenue
+        BigDecimal totalRevenue = bookingRepository.getTotalRevenueByStatus(BookingStatus.PAID);
+        // Get total booking
         Long totalBooking = bookingRepository.countTotalBookings();
-
+        // Get total tour
         Long totalTour = tourRepository.countTotalTours();
-
+        // Get total destination
         Long totalDestination = destinationRepository.countTotalDestinations();
-
+       // Get average rating
         Double averageRating = tourReviewRepository.getAverageRating();
-
+        // Get total customer
         Long totalCustomer = userProfileRepository.countUsersByRoleAndStatus(UserRole.CUSTOMER, UserStatus.ACTIVE);
-
+        // Get total guide
         Long totalGuide = tourGuideRepository.countGuidesByStatus(TourGuideStatus.ACTIVE);
 
 
-        // Upcoming tour count by next 3 day
+       // Get upcoming tour,
+        // count from today to next 3 days
         Long upcomingTour = tourScheduleRepository.countUpcomingTours(today, today.plusDays(3));
-
+        // Get completed tour
         Long completedTour = tourScheduleRepository.countToursByStatus(TourScheduleStatus.COMPLETED);
-
+        // Get cancelled booking
         Long cancelledBooking = bookingRepository.countBookingsByStatus(BookingStatus.CANCELLED);
 
         return new ReportResponse(
@@ -86,11 +88,9 @@ public class ReportServiceImpl implements ReportService {
             int limit
     ) {
 
-        PageRequest pageable =
-                PageRequest.of(0, limit);
+        PageRequest pageable = PageRequest.of(0, limit);
 
-        return bookingRepository.findTopDestinations(
-                pageable
+        return bookingRepository.findTopDestinations(pageable
         );
     }
 

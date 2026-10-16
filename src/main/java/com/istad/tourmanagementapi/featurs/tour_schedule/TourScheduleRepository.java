@@ -22,16 +22,16 @@ public interface TourScheduleRepository extends JpaRepository<TourSchedule, Long
             Pageable pageable
     );
 
-// Check if the guide has a schedule conflict
+// CHECK IF THERE IS A SCHEDULE CONFLICT
     @Query("""
-    SELECT COUNT(s) > 0
-    FROM TourSchedule s
-    JOIN s.guides g
-    WHERE g.id = :guideId
-      AND s.isDeleted = false
-      AND s.id <> :scheduleId
-      AND s.startDate <= :endDate
-      AND s.endDate >= :startDate
+    SELECT COUNT(schedule) > 0
+    FROM TourSchedule schedule
+    JOIN schedule.guides guide
+    WHERE guide.id = :guideId
+      AND schedule.isDeleted = false
+      AND schedule.id <> :scheduleId
+      AND schedule.startDate <= :endDate
+      AND schedule.endDate >= :startDate
 """)
     boolean existsGuideScheduleConflict(
             @Param("guideId") Long guideId,

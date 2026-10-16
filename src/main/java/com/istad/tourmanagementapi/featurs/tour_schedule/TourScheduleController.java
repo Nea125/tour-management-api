@@ -20,9 +20,10 @@ import java.util.List;
 public class TourScheduleController {
 
     private final TourScheduleService scheduleService;
-    // CREATE
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    // CREATE SCHEDULE
     public ApiResponse<TourScheduleResponse> create(
             @Valid @RequestBody CreateTourScheduleRequest request
     ) {

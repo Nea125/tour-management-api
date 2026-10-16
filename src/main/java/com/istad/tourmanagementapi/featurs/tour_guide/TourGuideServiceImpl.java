@@ -35,7 +35,7 @@ public class TourGuideServiceImpl implements TourGuideService {
     private final UserProfileMapper userProfileMapper;
     private final TourScheduleMapper tourScheduleMapper;
 
-    // CREATE
+    // CREATE TOUR GUIDE
     @Override
     public TourGuideResponse create(TourGuideRequest request) {
     // Check if license number already exists
@@ -47,9 +47,8 @@ public class TourGuideServiceImpl implements TourGuideService {
                     "License number already exists"
             );
         }
-// find and check user
-        UserProfile user =
-                userProfileRepository
+// Check if user exists
+        UserProfile user = userProfileRepository
                         .findById(request.userId())
                         .orElseThrow(() ->
                                 new ResponseStatusException(
@@ -67,14 +66,12 @@ public class TourGuideServiceImpl implements TourGuideService {
             );
         }
 
-        TourGuide tourGuide =
-                tourGuideMapper.toEntity(request);
+        TourGuide tourGuide = tourGuideMapper.toEntity(request);
 
         tourGuide.setUser(user);
         tourGuide.setStatus(TourGuideStatus.ACTIVE);
 
-        TourGuide saved =
-                tourGuideRepository.save(tourGuide);
+        TourGuide saved = tourGuideRepository.save(tourGuide);
 
         return tourGuideMapper.toResponse(saved);
     }
@@ -85,11 +82,7 @@ public class TourGuideServiceImpl implements TourGuideService {
     public TourGuideResponse findById(Long id) {
 
         TourGuide tourGuide =
-                tourGuideRepository
-                        .findByIdAndStatus(
-                                id,
-                                TourGuideStatus.ACTIVE
-                        )
+                tourGuideRepository.findByIdAndStatus(id, TourGuideStatus.ACTIVE)
                         .orElseThrow(() ->
                                 new ResponseStatusException(
                                         HttpStatus.NOT_FOUND,
@@ -111,12 +104,7 @@ public class TourGuideServiceImpl implements TourGuideService {
         Pageable pageable =
                 PageRequest.of(page, size);
 
-        Page<TourGuideResponse> guides =
-                tourGuideRepository
-                        .findAllByStatus(
-                                TourGuideStatus.ACTIVE,
-                                pageable
-                        )
+        Page<TourGuideResponse> guides = tourGuideRepository.findAllByStatus(TourGuideStatus.ACTIVE, pageable)
                         .map(tourGuideMapper::toResponse);
 
         return PageResponse.<TourGuideResponse>builder()
@@ -128,7 +116,7 @@ public class TourGuideServiceImpl implements TourGuideService {
                 .build();
     }
 
-    // PATCH
+    // UPDATE TOUR GUIDE
     @Override
     public TourGuideResponse update(
             Long id,
@@ -136,9 +124,7 @@ public class TourGuideServiceImpl implements TourGuideService {
     ) {
 
         TourGuide tourGuide =
-                tourGuideRepository
-                        .findById(id)
-                        .orElseThrow(() ->
+                tourGuideRepository.findById(id).orElseThrow(() ->
                                 new ResponseStatusException(
                                         HttpStatus.NOT_FOUND,
                                         "Tour guide not found"
@@ -174,12 +160,7 @@ public class TourGuideServiceImpl implements TourGuideService {
 
             // Check whether this user already belongs
             // to another tour guide
-            if (!tourGuide.getUser()
-                    .getId()
-                    .equals(request.userId())
-                    && tourGuideRepository
-                    .existsByUser_Id(request.userId())) {
-
+            if (!tourGuide.getUser().getId().equals(request.userId()) && tourGuideRepository.existsByUser_Id(request.userId())) {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
                         "This user is already a tour guide"
@@ -219,16 +200,12 @@ public class TourGuideServiceImpl implements TourGuideService {
 
         tourGuideRepository.save(tourGuide);
     }
-// Find user by tour guide id
+// FIND USER BY GUIDE ID
     @Override
     @Transactional
     public UserProfileResponse findUserByGuideId(Long guideId) {
 
-        TourGuide guide = tourGuideRepository
-                .findByIdAndStatus(
-                        guideId,
-                        TourGuideStatus.ACTIVE
-                )
+        TourGuide guide = tourGuideRepository.findByIdAndStatus(guideId, TourGuideStatus.ACTIVE)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -247,7 +224,7 @@ public class TourGuideServiceImpl implements TourGuideService {
                 guide.getUser()
         );
     }
- // Find schedules by tour guide id
+ // FID SCHEDULES BY GUIDE ID
     @Override
     @Transactional
     public List<TourScheduleResponse> findSchedulesByGuideId(
@@ -255,10 +232,7 @@ public class TourGuideServiceImpl implements TourGuideService {
     ) {
 
         TourGuide guide = tourGuideRepository
-                .findByIdAndStatus(
-                        guideId,
-                        TourGuideStatus.ACTIVE
-                )
+                .findByIdAndStatus(guideId, TourGuideStatus.ACTIVE)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,

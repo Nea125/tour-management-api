@@ -23,11 +23,11 @@ public class DestinationMedia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "destination_id", nullable = false)
     private Destination destination;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "media_id", nullable = false)
     private Media media;
 

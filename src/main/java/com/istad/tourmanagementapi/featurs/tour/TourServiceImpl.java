@@ -15,6 +15,7 @@ import com.istad.tourmanagementapi.featurs.tour.mapper.TourMapper;
 import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jboss.resteasy.annotations.Status;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,13 +43,16 @@ public class TourServiceImpl implements TourService {
     private final TourMapper tourMapper;
     private final MediaService mediaService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @Override
     @Transactional
+
+    // CREATE TOUR
     public TourResponse create(
             CreateTourRequest request,
             List<MultipartFile> images
     ) {
-
+// Check if no image exists
         if (images == null || images.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -61,7 +66,7 @@ public class TourServiceImpl implements TourService {
         );
         List<Media> medias = mediaService.uploadMediaEntities(images);
 
-        // Connect images with sort order
+        // Save images in sort order
         List<TourMedia> tourImages = new ArrayList<>();
         for (int i = 0; i < medias.size(); i++) {
             TourMedia tourMedia = new TourMedia();
@@ -75,6 +80,7 @@ public class TourServiceImpl implements TourService {
         return tourMapper.toResponse(tourRepository.save(tour));
     }
 
+    // FIND BY ID
     @Override
     public TourResponse findById(Long id) {
         return tourMapper.toResponse(getById(id));
@@ -99,6 +105,7 @@ public class TourServiceImpl implements TourService {
                 .build();
     }
 
+    // SEARCH TOURS BY TITLE
     @Override
     public PageResponse<TourResponse> search(
             String title,
@@ -122,6 +129,8 @@ public class TourServiceImpl implements TourService {
                 .build();
     }
 
+
+    // UPDATE TOUR
     @Override
     @Transactional
     public TourResponse update(
@@ -133,10 +142,7 @@ public class TourServiceImpl implements TourService {
 
         Tour tour = getById(id);
 
-        tourMapper.updateEntity(
-                request,
-                tour
-        );
+        tourMapper.updateEntity(request, tour);
 
         if (request.destinationId() != null) {
             tour.setDestination(
@@ -189,6 +195,7 @@ public class TourServiceImpl implements TourService {
         );
     }
 
+    // DELETE TOUR
     @Override
     public void delete(Long id) {
         Tour tour = getById(id);
@@ -196,6 +203,7 @@ public class TourServiceImpl implements TourService {
         tourRepository.save(tour);
     }
 
+    // GET TOUR BY ID
     private Tour getById(Long id) {
 
         return tourRepository
@@ -208,6 +216,7 @@ public class TourServiceImpl implements TourService {
                 );
     }
 
+    // GET DESTINATION BY ID
     private Destination getDestinationById(Long id) {
 
         return destinationRepository
@@ -220,6 +229,7 @@ public class TourServiceImpl implements TourService {
                 );
     }
 
+    // GET TOURS BY DESTINATION ID
     @Override
     public PageResponse<TourResponse> findByDestinationId(
             Long destinationId,
@@ -243,6 +253,8 @@ public class TourServiceImpl implements TourService {
                 .build();
     }
 
+
+    // GET TOUR IMAGE BY ID
     @Override
     @Transactional
     public ResponseEntity<Resource> getTourImage(
@@ -266,6 +278,7 @@ public class TourServiceImpl implements TourService {
                 .body(resource);
     }
 
+    // UPDATE TOUR IMAGE
     @Override
     @Transactional
     public MediaResponse updateTourImage(
@@ -289,6 +302,7 @@ public class TourServiceImpl implements TourService {
     private static final double POPULAR_MIN_AVG_RATING = 2.0;
     private static final long POPULAR_MIN_REVIEWS = 2;
 
+    // GET POPULAR TOURS
     @Override
     @Transactional
     public List<PopularTourResponse> findPopularTours() {

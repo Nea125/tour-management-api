@@ -42,8 +42,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponse create(CreateBookingRequest request) {
 
         // Get schedule
-        TourSchedule schedule =
-                getScheduleById(request.scheduleId());
+        TourSchedule schedule = getScheduleById(request.scheduleId());
 
         // Validate schedule
         validateSchedule(schedule);
@@ -56,10 +55,7 @@ public class BookingServiceImpl implements BookingService {
         UserProfile user = getUserById(userId);
 
         // Calculate total price
-        BigDecimal totalPrice = schedule.getTour().getPrice()
-                        .multiply(
-                                BigDecimal.valueOf(request.numberOfPeople())
-                        );
+        BigDecimal totalPrice = schedule.getTour().getPrice().multiply(BigDecimal.valueOf(request.numberOfPeople()));
 
         //  Create booking
         Booking booking = Booking.builder().bookingCode(generateBookingCode())
@@ -101,15 +97,9 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public Page<BookingResponse> findByStatus(BookingStatus status, int page, int size) {
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(Sort.Direction.DESC, "bookingDate")
-        );
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "bookingDate"));
 
-        return bookingRepository
-                .findAllByStatus(status, pageable)
-                .map(bookingMapper::toResponse);
+        return bookingRepository.findAllByStatus(status, pageable).map(bookingMapper::toResponse);
     }
     // FIND MY BOOKINGS
     @Override
@@ -246,23 +236,18 @@ public class BookingServiceImpl implements BookingService {
 
 
     private void validateSchedule(TourSchedule schedule) {
-
+        // Check if schedule is open
         if (schedule.getStatus() != TourScheduleStatus.OPEN) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Tour schedule is not open for booking"
             );
         }
-
-        Integer bookedPeople =
-                bookingRepository.countPaidPeopleByScheduleId(
-                        schedule.getId()
-
-                );
-
-        int availableCapacity =
-                schedule.getCapacity() - bookedPeople;
-
+        // Check if schedule is fully booked
+        Integer bookedPeople = bookingRepository.countPaidPeopleByScheduleId(schedule.getId());
+        // Check available capacity
+        int availableCapacity = schedule.getCapacity() - bookedPeople;
+        // Check if available capacity is less than 0
         if (availableCapacity <= 0) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -271,10 +256,9 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void validateAvailability(
-            TourSchedule schedule,
-            Integer numberOfPeople
+    private void validateAvailability(TourSchedule schedule, Integer numberOfPeople
     ) {
+        // Check if number of people is null less than or equal to 0
         if (numberOfPeople == null || numberOfPeople <= 0) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -282,14 +266,10 @@ public class BookingServiceImpl implements BookingService {
             );
         }
 
-        Integer bookedPeople =
-                bookingRepository.countPaidPeopleByScheduleId(
-                        schedule.getId()
-                );
+        Integer bookedPeople = bookingRepository.countPaidPeopleByScheduleId(schedule.getId());
 
-        int availableCapacity =
-                schedule.getCapacity() - bookedPeople;
-
+        int availableCapacity = schedule.getCapacity() - bookedPeople;
+        // Check if number of people exceeds available capacity
         if (numberOfPeople > availableCapacity) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,

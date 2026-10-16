@@ -49,18 +49,23 @@ public interface TourRepository
     Long countTotalTours();
 
 
-  // FIND POPULAR TOUR BASE ON RATTING AND REVIEW
+    // FIND POPULAR TOURS BASED ON RATING OR REVIEW COUNT
     @Query("""
-    SELECT t, AVG(r.rating), COUNT(r.id)
-    FROM Tour t
-    JOIN t.reviews r
-    WHERE t.isDeleted = false
-    AND r.isDeleted = false
-    GROUP BY t
-    HAVING AVG(r.rating) > :minAvgRating
-       AND COUNT(r.id) >= :minReviews
-    ORDER BY AVG(r.rating) DESC, COUNT(r.id) DESC
-""")
+    SELECT
+        tour,
+        AVG(review.rating),
+        COUNT(review.id)
+    FROM Tour tour
+    JOIN tour.reviews review
+    WHERE tour.isDeleted = false
+      AND review.isDeleted = false
+    GROUP BY tour
+    HAVING AVG(review.rating) >= :minAvgRating
+        OR COUNT(review) >= :minReviews
+    ORDER BY
+        AVG(review.rating) DESC,
+        COUNT(review) DESC
+    """)
     List<Object[]> findPopularTours(
             @Param("minAvgRating") double minAvgRating,
             @Param("minReviews") long minReviews

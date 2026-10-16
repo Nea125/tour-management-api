@@ -28,12 +28,13 @@ public class DestinationController {
     @PostMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    //Used @RequestBody when the data comes from the HTTP request body, usually as JSON.
-    //    //Used @RequestParam when data comes as a request parameter, commonly from query parameters or form-data.
+    //    Used @RequestBody when the data comes from the HTTP request body, usually as JSON.
+    //    Used @RequestParam when data comes as a request parameter, commonly from query parameters or form-data.
     //    JSON object → @RequestBody
     //    Query/form parameter → @RequestParam
     //    multipart/form-data text fields → @ModelAttribute
     //    Uploaded files → @RequestParam MultipartFile
+
      // CREATE DESTINATION
     public ApiResponse<DestinationResponse> create(
             @Valid @ModelAttribute CreateDestinationRequest request,
@@ -47,12 +48,10 @@ public class DestinationController {
                 .data(destinationService.create(request, images))
                 .build();
     }
-    // FIND DESTINATION BY ID
 
+    // FIND DESTINATION BY ID
     @GetMapping("/{id}")
-    public ApiResponse<DestinationResponse> findById(
-            @PathVariable Long id
-    ) {
+    public ApiResponse<DestinationResponse> findById(@PathVariable Long id) {
 
         return ApiResponse.<DestinationResponse>builder()
                 .status(1)
@@ -61,24 +60,20 @@ public class DestinationController {
                         destinationService.findById(id))
                 .build();
     }
+
 // SEARCH DESTINATION BY NAME
     @GetMapping("/search")
     public ApiResponse<PageResponse<DestinationResponse>> search(
 
             @RequestParam String name,
-
             @RequestParam(defaultValue = "0")
             int page,
-
             @RequestParam(defaultValue = "10")
             int size
     ) {
 
-        PageResponse<DestinationResponse> destinations =
-                destinationService.search(name, page, size);
-
-        String message =
-                destinations.getItems().isEmpty()
+        PageResponse<DestinationResponse> destinations = destinationService.search(name, page, size);
+        String message = destinations.getItems().isEmpty()
                         ? "No destinations found"
                         : "Destinations retrieved successfully";
 
@@ -89,6 +84,7 @@ public class DestinationController {
                 .data(destinations)
                 .build();
     }
+
 // GET ALL DESTINATION
     @GetMapping
     public ApiResponse<PageResponse<DestinationResponse>> findAll(
@@ -100,8 +96,7 @@ public class DestinationController {
             int size
     ) {
 
-        PageResponse<DestinationResponse> destinations =
-                destinationService.findAll(page, size);
+        PageResponse<DestinationResponse> destinations = destinationService.findAll(page, size);
 
         String message =
                 destinations.getItems().isEmpty()
@@ -115,6 +110,7 @@ public class DestinationController {
                 .data(destinations)
                 .build();
     }
+
 // UPDATE DESTINATION
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<DestinationResponse> update(
@@ -131,19 +127,18 @@ public class DestinationController {
                 .data(destinationService.update(id, request, imageIds, images))
                 .build();
     }
+
 // DELETE DESTINATION
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(
-            @PathVariable Long id
-    ) {
+    public ApiResponse<Void> delete(@PathVariable Long id) {
 
         destinationService.delete(id);
-
         return ApiResponse.<Void>builder()
                 .status(1)
                 .message("Destination deleted successfully")
                 .build();
     }
+
 // GET DESTINATION IMAGE
     @GetMapping("/{destinationId}/media/{imageId}")
     public ResponseEntity<Resource> getDestinationImage(
@@ -151,10 +146,7 @@ public class DestinationController {
             @PathVariable Integer imageId
     ) {
 
-        return destinationService.getDestinationImage(
-                destinationId,
-                imageId
-        );
+        return destinationService.getDestinationImage(destinationId, imageId);
     }
 
 // UPDATE DESTINATION IMAGE
@@ -170,13 +162,7 @@ public class DestinationController {
         return ApiResponse.<MediaResponse>builder()
                 .status(1)
                 .message("Image updated successfully")
-                .data(
-                        destinationService.updateDestinationImage(
-                                destinationId,
-                                imageId,
-                                image
-                        )
-                )
+                .data(destinationService.updateDestinationImage(destinationId, imageId, image))
                 .build();
     }
 }

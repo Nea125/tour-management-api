@@ -20,6 +20,8 @@ public class ReviewController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+
+    // CREATE REVIEW
     public ApiResponse<ReviewResponse> create(
             @Valid @RequestBody ReviewRequest request
     ) {
@@ -31,6 +33,7 @@ public class ReviewController {
                 .build();
     }
 
+    // FIND REVIEW BY ID
     @GetMapping("/{id}")
     public ApiResponse<ReviewResponse> findById(
             @PathVariable Long id
@@ -43,6 +46,7 @@ public class ReviewController {
                 .build();
     }
 
+    // FIND REVIEW BY BOOKING ID
     @GetMapping("/booking/{bookingId}")
     public ApiResponse<ReviewResponse> findByBookingId(
             @PathVariable Long bookingId
@@ -55,6 +59,7 @@ public class ReviewController {
                 .build();
     }
 
+    // DELETE REVIEW
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(
             @PathVariable Long id
@@ -67,6 +72,7 @@ public class ReviewController {
                 .build();
     }
 
+    // FIND REVIEWS BY TOUR ID
     @GetMapping("/tour/{tourId}")
     public ApiResponse<PageResponse<ReviewResponse>> findByTourId(
             @PathVariable Long tourId,
@@ -81,6 +87,8 @@ public class ReviewController {
                 .build();
     }
 
+
+    // FIND MY REVIEWS BY USER TOKEN
     @GetMapping("/my")
     public ApiResponse<PageResponse<ReviewResponse>> findMyReviews(
             @RequestParam(defaultValue = "0") int page,
@@ -92,6 +100,8 @@ public class ReviewController {
                 .data(reviewService.findMyReviews(page,size))
                 .build();
     }
+
+    // UPDATE REVIEW
     @PatchMapping("/{id}")
     public ApiResponse<ReviewResponse> update(
             @PathVariable Long id,

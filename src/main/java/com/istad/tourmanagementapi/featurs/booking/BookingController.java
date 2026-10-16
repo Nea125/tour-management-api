@@ -21,6 +21,8 @@ public class BookingController {
     private final PageMapper pageMapper;
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+
+    // CREATE BOOKING
     public ApiResponse<BookingResponse> create(
             @Valid
             @RequestBody CreateBookingRequest request
@@ -33,6 +35,7 @@ public class BookingController {
                 .data(bookingService.create(request)).build();
     }
 
+    // FIND BOOKING BY ID
     @GetMapping("/{id}")
     public ApiResponse<BookingResponse> findById(
             @PathVariable Long id
@@ -45,6 +48,8 @@ public class BookingController {
                 .data(bookingService.findById(id))
                 .build();
     }
+
+    // FIND BOOKING BY STATUS
     @GetMapping("/status/{status}")
     public ApiResponse<?> findByStatus(
             @PathVariable BookingStatus status,
@@ -62,7 +67,7 @@ public class BookingController {
                 .build();
     }
 
- // Find all bookings by schedule id
+ // FIND BOOKING BY SCHEDULE ID
     @GetMapping("/schedule/{scheduleId}")
     public ApiResponse<List<BookingResponse>> findByScheduleId(
             @PathVariable Long scheduleId
@@ -74,6 +79,8 @@ public class BookingController {
                 .data(bookingService.findByScheduleId(scheduleId))
                 .build();
     }
+
+    // FIND MY BOOKINGS
     @GetMapping("/my")
     public ApiResponse<List<BookingResponse>> findMyBookings() {
 
@@ -85,6 +92,7 @@ public class BookingController {
                 .build();
     }
 
+    // FIND ALL BOOKINGS
     @GetMapping
     public ApiResponse<?> findAll(
             @RequestParam(defaultValue = "0")
@@ -102,6 +110,7 @@ public class BookingController {
                 .build();
     }
 
+    // UPDATE BOOKING
     @PutMapping("/{id}")
     public ApiResponse<BookingResponse> update(
             @PathVariable Long id,
@@ -118,6 +127,7 @@ public class BookingController {
                 .build();
     }
 
+// CANCEL BOOKING
     @PatchMapping("/{id}/cancel")
     public ApiResponse<BookingResponse> cancel(
             @PathVariable Long id

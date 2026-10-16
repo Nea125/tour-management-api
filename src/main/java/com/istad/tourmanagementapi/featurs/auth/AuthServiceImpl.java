@@ -7,25 +7,18 @@ import com.istad.tourmanagementapi.featurs.enums.UserRole;
 import com.istad.tourmanagementapi.featurs.enums.UserStatus;
 import com.istad.tourmanagementapi.featurs.profile.UserProfileRepository;
 import com.istad.tourmanagementapi.featurs.profile.entity.UserProfile;
-import com.istad.tourmanagementapi.featurs.security.KeycloakRoleEnum;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.*;
 import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.GroupRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -89,20 +82,13 @@ public class AuthServiceImpl implements AuthService {
 
             if (response.getStatus() == HttpStatus.CREATED.value()) {
 
-                log.info(
-                        "User {} created successfully",
-                        user.getUsername()
-                );
+                log.info("User {} created successfully", user.getUsername());
 
                 // Get the created Keycloak user
-                UserRepresentation createdUser =
-                        getUser(user.getUsername(), usersResource);
+                UserRepresentation createdUser = getUser(user.getUsername(), usersResource);
 
                 // Save into user_profile table
-                saveUserProfile(
-                        user.getUsername(),
-                        registerRequest
-                );
+                saveUserProfile(user.getUsername(), registerRequest);
 
                 // Return response
                 return new RegisterResponse(
@@ -118,20 +104,12 @@ public class AuthServiceImpl implements AuthService {
                 );
             }
 
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to create user"
-            );
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create user");
         }
     }
 
-    private void saveUserProfile(
-            String username,
-            RegisterRequest request
-    ) {
-        UserRepresentation createdUser =
-                getUser(username, getUsersResource());
-
+    private void saveUserProfile(String username, RegisterRequest request) {
+        UserRepresentation createdUser = getUser(username, getUsersResource());
         UserProfile userProfile = new UserProfile();
 
         userProfile.setId(createdUser.getId());
@@ -144,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
 //      userProfile.setProfileImage(request.profileImage());
         userProfile.setRole(UserRole.CUSTOMER);
         userProfile.setStatus(UserStatus.ACTIVE);
-userProfile.setIsDeleted(false);
+        userProfile.setIsDeleted(false);
         userProfileRepository.save(userProfile);
     }
     private UsersResource getUsersResource() {

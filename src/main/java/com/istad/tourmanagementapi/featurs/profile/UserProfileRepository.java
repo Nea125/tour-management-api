@@ -24,12 +24,13 @@ public interface UserProfileRepository
             Pageable pageable
     );
 
+    // COUNT USERS BY ROLE AND STATUS
     @Query("""
-    SELECT COUNT(u)
-    FROM UserProfile u
-    WHERE u.role = :role
-      AND u.status = :status
-      AND u.isDeleted = false
+    SELECT COUNT(user)
+    FROM UserProfile user
+    WHERE user.role = :role
+      AND user.status = :status
+      AND user.isDeleted = false
 """)
     Long countUsersByRoleAndStatus(
             @Param("role") UserRole role,

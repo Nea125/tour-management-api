@@ -24,6 +24,8 @@ public class UserProfileController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+
+    // CREATE USER
     public ApiResponse<UserProfileResponse> create(
             @Valid @RequestBody CreateUserProfileRequest request
     ) {
@@ -34,6 +36,7 @@ public class UserProfileController {
                 .build();
     }
 
+    // GET USER BY ID
     @GetMapping("/{id}")
     public ApiResponse<UserProfileResponse> findById(
             @PathVariable String id
@@ -45,6 +48,7 @@ public class UserProfileController {
                 .build();
     }
 
+    // GET ALL USERS
     @GetMapping
     public ApiResponse<PageResponse<UserProfileResponse>> findAll(
             @RequestParam(defaultValue = "0") int page,
@@ -64,6 +68,7 @@ public class UserProfileController {
                 .build();
     }
 
+    // UPDATE USER
     @PatchMapping("/{id}")
     public ApiResponse<UserProfileResponse> update(
             @PathVariable String id,
@@ -76,6 +81,7 @@ public class UserProfileController {
                 .build();
     }
 
+    // DELETE USER
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(
             @PathVariable String id
@@ -88,10 +94,8 @@ public class UserProfileController {
                 .build();
     }
 
-    @PatchMapping(
-            value = "/{id}/image",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
+    // UPDATE PROFILE IMAGE
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UserProfileResponse> updateProfileImage(
             @PathVariable String id,
             @RequestPart("image") MultipartFile image
@@ -103,6 +107,7 @@ public class UserProfileController {
                 .build();
     }
 
+    // UPDATE USER ROLE
     @PatchMapping("/{id}/role")
     public ApiResponse<UserProfileResponse> updateUserRole(
             @PathVariable String id,
@@ -114,7 +119,7 @@ public class UserProfileController {
                 .data(userProfileService.updateUserRole(id, request.role()))
                 .build();
     }
-
+// UPDATE USER STATUS
     @PatchMapping("/{id}/status")
     public ApiResponse<UserProfileResponse> updateUserStatus(
             @PathVariable String id,

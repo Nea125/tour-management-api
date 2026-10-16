@@ -46,11 +46,7 @@ public class Destination {
 //    )
 //    private List<Media> media;
 
-    @OneToMany(
-            mappedBy = "destination",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "destination")
     @OrderBy("sortOrder ASC")
     private List<DestinationMedia> images;
 

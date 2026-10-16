@@ -23,6 +23,7 @@ public class TourGuideController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    // CREATE TOUR GUIDE
     public ApiResponse<TourGuideResponse> create(
             @Valid @RequestBody TourGuideRequest request
     ) {
@@ -33,6 +34,7 @@ public class TourGuideController {
                 .build();
     }
 
+    // FIND TOUR GUIDE BY ID
     @GetMapping("/{id}")
     public ApiResponse<TourGuideResponse> findById(
             @PathVariable Long id
@@ -44,6 +46,7 @@ public class TourGuideController {
                 .build();
     }
 
+    // FIND ALL TOUR GUIDE
     @GetMapping
     public ApiResponse<PageResponse<TourGuideResponse>> findAll(
             @RequestParam(defaultValue = "0") int page,
@@ -64,6 +67,7 @@ public class TourGuideController {
                 .build();
     }
 
+    // UPDATE TOUR GUIDE
     @PatchMapping("/{id}")
     public ApiResponse<TourGuideResponse> update(
             @PathVariable Long id,
@@ -76,6 +80,8 @@ public class TourGuideController {
                 .build();
     }
 
+
+    // SOFT DELETE
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(
             @PathVariable Long id
@@ -88,6 +94,7 @@ public class TourGuideController {
                 .build();
     }
 
+    // FIND USER BY GUIDE ID
     @GetMapping("/{id}/user")
     public ApiResponse<UserProfileResponse> findUserByGuideId(
             @PathVariable Long id
@@ -99,6 +106,7 @@ public class TourGuideController {
                 .build();
     }
 
+    // FIND SCHEDULES BY GUIDE ID
     @GetMapping("/{id}/schedules")
     public ApiResponse<List<TourScheduleResponse>> findSchedulesByGuideId(
             @PathVariable Long id

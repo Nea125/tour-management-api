@@ -30,9 +30,7 @@ import java.util.stream.Collectors;
 public class DestinationServiceImpl implements DestinationService {
 
     private final DestinationRepository destinationRepository;
-
     private final DestinationMapper destinationMapper;
-
     private final MediaService mediaService;
 
 
@@ -64,7 +62,7 @@ public class DestinationServiceImpl implements DestinationService {
         // Upload images
         List<Media> medias = mediaService.uploadMediaEntities(images);
 
-        // Save images with sort order
+        // Save images in sort order
         List<DestinationMedia> destinationImages = new ArrayList<>();
 
         for (int i = 0; i < medias.size(); i++) {
@@ -85,7 +83,7 @@ public class DestinationServiceImpl implements DestinationService {
         return destinationMapper.toResponse(saved);
     }
 
-
+// FIND DESTINATION BY ID
     @Override
     @Transactional(readOnly = true)
     public DestinationResponse findById(Long id) {
@@ -93,7 +91,7 @@ public class DestinationServiceImpl implements DestinationService {
         return destinationMapper.toResponse(destination);
     }
 
-
+// FIND ALL DESTINATIONS
     @Override
     @Transactional(readOnly = true)
     public PageResponse<DestinationResponse> findAll(int page, int size) {
@@ -111,7 +109,7 @@ public class DestinationServiceImpl implements DestinationService {
                 .build();
     }
 
-
+// SEARCH DESTINATION BY NAME
     @Override
     @Transactional(readOnly = true)
     public PageResponse<DestinationResponse> search(String name, int page, int size
@@ -134,6 +132,7 @@ public class DestinationServiceImpl implements DestinationService {
                 .build();
     }
 
+    // SOFT DELETE DESTINATION
     @Override
     @Transactional
     public void delete(Long id) {
@@ -147,7 +146,7 @@ public class DestinationServiceImpl implements DestinationService {
         destinationRepository.save(destination);
     }
 
-
+// GET DESTINATION BY ID
     private Destination getById(Long id) {
 
         return destinationRepository
@@ -161,6 +160,7 @@ public class DestinationServiceImpl implements DestinationService {
                 );
     }
 
+    // GET DESTINATION IMAGES
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Resource> getDestinationImage(
@@ -168,8 +168,7 @@ public class DestinationServiceImpl implements DestinationService {
             Integer imageId
     ) {
 
-        Media media = destinationRepository
-                .findMediaByDestinationIdAndImageId(
+        Media media = destinationRepository.findMediaByDestinationIdAndImageId(
                         destinationId,
                         imageId
                 )
@@ -180,16 +179,12 @@ public class DestinationServiceImpl implements DestinationService {
                         )
                 );
 
-        Resource resource =
-                mediaService.getMediaResource(media.getId());
+        Resource resource = mediaService.getMediaResource(media.getId());
 
-        return ResponseEntity.ok()
-                .contentType(
-                        MediaType.parseMediaType(media.getMediaType())
-                )
-                .body(resource);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(media.getMediaType())).body(resource);
     }
 
+    // UPDATE DESTINATION IMAGE
     @Override
     @Transactional
     public MediaResponse updateDestinationImage(
@@ -198,11 +193,7 @@ public class DestinationServiceImpl implements DestinationService {
             MultipartFile image
     ) {
 
-        Media media = destinationRepository
-                .findMediaByDestinationIdAndImageId(
-                        destinationId,
-                        imageId
-                )
+        Media media = destinationRepository.findMediaByDestinationIdAndImageId(destinationId, imageId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -217,6 +208,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
 
+    // UPDATE DESTINATION
     @Override
     @Transactional
     public DestinationResponse update(Long id, UpdateDestinationRequest request, List<Integer> imageIds, List<MultipartFile> images
@@ -232,7 +224,7 @@ public class DestinationServiceImpl implements DestinationService {
             if (imageIds == null) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Invalide Image Id"
+                        "Invalid Image Id"
                 );
             }
 
@@ -259,7 +251,7 @@ public class DestinationServiceImpl implements DestinationService {
             }
 
 
-            // Save image with the same possition
+            // Save image with the same position
             for (int i = 0; i < imageIds.size(); i++) {
                 mediaService.updateMedia(imageIds.get(i), images.get(i));
             }

@@ -16,6 +16,7 @@ public class ReportController {
 
     private final ReportService reportService;
 
+    // GET REPORT
     @GetMapping("/summary")
     public ApiResponse<ReportResponse> getSummary() {
 
@@ -26,6 +27,8 @@ public class ReportController {
                 .data(reportService.getReport())
                 .build();
     }
+
+    // GET BOOKING  STATISTICS
     @GetMapping("/bookings/status")
     public ApiResponse<List<BookingStatusReportResponse>> getBookingsByStatus() {
 
@@ -37,6 +40,7 @@ public class ReportController {
                 .build();
     }
 
+    // GET TOP TOURS
     @GetMapping("/tours/top")
     public ApiResponse<List<TopTourResponse>> getTopTours(
             @RequestParam(defaultValue = "5") int limit
@@ -50,6 +54,7 @@ public class ReportController {
                 .build();
     }
 
+    // GET TOP DESTINATIONS
     @GetMapping("/destinations/top")
     public ApiResponse<List<TopDestinationResponse>> getTopDestinations(
             @RequestParam(defaultValue = "5") int limit

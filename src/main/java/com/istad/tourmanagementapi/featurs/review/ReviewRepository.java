@@ -16,15 +16,9 @@ public interface ReviewRepository
 
     Optional<Review> findByBooking_IdAndIsDeletedFalse(Long bookingId);
 
-    Page<Review> findByTour_IdAndIsDeletedFalse(
-            Long tourId,
-            Pageable pageable
-    );
+    Page<Review> findByTour_IdAndIsDeletedFalse(Long tourId, Pageable pageable);
 
-    Page<Review> findByUser_IdAndIsDeletedFalse(
-            String userId,
-            Pageable pageable
-    );
+    Page<Review> findByUser_IdAndIsDeletedFalse(String userId, Pageable pageable);
 
     // Query to get the average rating
     // Get the average rating from all non-deleted reviews
@@ -32,9 +26,9 @@ public interface ReviewRepository
     // COALESCE returns 0 when AVG(r.rating) is null
     // Example: AVG(6, 3) = 4.5
     @Query("""
-           SELECT COALESCE(AVG(r.rating), 0)
-           FROM Review r
-           WHERE r.isDeleted = false
+           SELECT COALESCE(AVG(review.rating), 0)
+           FROM Review review
+           WHERE review.isDeleted = false
            """)
     Double getAverageRating();
 }

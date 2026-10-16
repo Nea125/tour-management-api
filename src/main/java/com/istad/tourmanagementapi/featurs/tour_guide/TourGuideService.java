@@ -11,27 +11,15 @@ import java.util.List;
 
 public interface TourGuideService {
 
-    TourGuideResponse create(
-            TourGuideRequest request
-    );
+    TourGuideResponse create(TourGuideRequest request);
 
-    TourGuideResponse findById(
-            Long id
-    );
+    TourGuideResponse findById(Long id);
 
-    PageResponse<TourGuideResponse> findAll(
-            int page,
-            int size
-    );
+    PageResponse<TourGuideResponse> findAll(int page, int size);
 
-    TourGuideResponse update(
-            Long id,
-            PatchTourGuideRequest request
-    );
+    TourGuideResponse update(Long id, PatchTourGuideRequest request);
 
-    void delete(
-            Long id
-    );
+    void delete(Long id);
 
     UserProfileResponse findUserByGuideId(Long guideId);
 
