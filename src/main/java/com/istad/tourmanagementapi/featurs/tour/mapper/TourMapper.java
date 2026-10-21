@@ -11,12 +11,7 @@ import org.mapstruct.*;
 import java.util.Comparator;
 import java.util.List;
 
-@Mapper(
-        componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        nullValuePropertyMappingStrategy =
-                NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TourMapper {
 
     @Mapping(target = "destination", ignore = true)

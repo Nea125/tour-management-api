@@ -12,8 +12,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.james.mime4j.dom.datetime.DateTime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -72,4 +74,7 @@ public class UserProfile {
     private List<Review> reviews;
 
     UserRole role;
+
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

@@ -18,7 +18,7 @@ public record ActivityRequest(
         @NotBlank(message = "Description is required")
         String description,
 
-        @NotEmpty(message = "Timeline is required")
+//        @NotEmpty(message = "Timeline is required")
         List<@Valid ActivityTimelineRequest> timeline
 
 ) {

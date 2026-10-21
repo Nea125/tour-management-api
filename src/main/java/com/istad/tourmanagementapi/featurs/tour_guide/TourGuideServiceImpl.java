@@ -123,8 +123,7 @@ public class TourGuideServiceImpl implements TourGuideService {
             PatchTourGuideRequest request
     ) {
 
-        TourGuide tourGuide =
-                tourGuideRepository.findById(id).orElseThrow(() ->
+        TourGuide tourGuide = tourGuideRepository.findById(id).orElseThrow(() ->
                                 new ResponseStatusException(
                                         HttpStatus.NOT_FOUND,
                                         "Tour guide not found"
@@ -171,13 +170,9 @@ public class TourGuideServiceImpl implements TourGuideService {
         }
 
         // Update only non-null fields
-        tourGuideMapper.updateEntity(
-                request,
-                tourGuide
-        );
+        tourGuideMapper.updateEntity(request, tourGuide);
 
-        TourGuide updated =
-                tourGuideRepository.save(tourGuide);
+        TourGuide updated = tourGuideRepository.save(tourGuide);
 
         return tourGuideMapper.toResponse(updated);
     }

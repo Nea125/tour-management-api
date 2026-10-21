@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -38,17 +40,10 @@ public class Destination {
     @Column(nullable = false)
     private String country;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "destination_medias",
-//            joinColumns = @JoinColumn(name = "destination_id"),
-//            inverseJoinColumns = @JoinColumn(name = "media_id")
-//    )
-//    private List<Media> media;
 
-    @OneToMany(mappedBy = "destination")
+    @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC")
-    private List<DestinationMedia> images;
+    private List<DestinationMedia> images = new ArrayList<>();
 
     @NotNull
     Double latitude;

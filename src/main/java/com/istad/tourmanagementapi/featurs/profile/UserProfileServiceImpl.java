@@ -14,6 +14,7 @@ import com.istad.tourmanagementapi.featurs.utils.PageResponse;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
+import org.apache.james.mime4j.dom.datetime.DateTime;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -29,6 +30,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -113,6 +116,8 @@ public class UserProfileServiceImpl implements UserProfileService {
         userProfile.setGender(request.gender());
 
         userProfile.setDateOfBirth(request.dateOfBirth());
+        userProfile.setCreatedAt(LocalDateTime.now());
+        userProfile.setUpdatedAt(LocalDateTime.now());
 
         userProfile.setStatus(UserStatus.ACTIVE);
 
@@ -338,6 +343,8 @@ public class UserProfileServiceImpl implements UserProfileService {
                 response.dateOfBirth(),
                 response.isDeleted(),
                 response.status(),
+                response.createdAt(),
+                response.updatedAt(),
                 roles
 
         );

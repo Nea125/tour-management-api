@@ -15,14 +15,21 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    // Get all bookings with a specific status
+//    // Get all bookings with a specific status
     Page<Booking> findAllByStatus(BookingStatus status, Pageable pageable);
+//
+//    // Get all bookings belonging to a specific schedule sort by DESC date
+//    List<Booking> findAllBySchedule_IdOrderByBookingDateDesc(Long scheduleId);
+//
+//   // Get all bookings belonging to a specific user sort by DESC date
+//    List<Booking> findAllByUser_IdOrderByBookingDateDesc(String userId);
 
-    // Get all bookings belonging to a specific schedule sort by DESC date
-    List<Booking> findAllBySchedule_IdOrderByBookingDateDesc(Long scheduleId);
 
-   // Get all bookings belonging to a specific user sort by DESC date
-    List<Booking> findAllByUser_IdOrderByBookingDateDesc(String userId);
+    // Get all bookings belonging to a specific schedule, latest booking first
+    List<Booking> findAllBySchedule_IdOrderByBookingDateDescIdDesc(Long scheduleId);
+
+    // Get all bookings belonging to a specific user, latest booking first
+    List<Booking> findAllByUser_IdOrderByBookingDateDescIdDesc(String userId);
 
     // Get total number of people booked for a specific schedule
     @Query("""

@@ -109,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
         String userId = AuthUtils.extractUserId();
 
         return bookingRepository
-                .findAllByUser_IdOrderByBookingDateDesc(userId)
+                .findAllByUser_IdOrderByBookingDateDescIdDesc(userId)
                 .stream()
                 .map(bookingMapper::toResponse)
                 .toList();
@@ -121,12 +121,11 @@ public class BookingServiceImpl implements BookingService {
         getScheduleById(scheduleId);
 
         return bookingRepository
-                .findAllBySchedule_IdOrderByBookingDateDesc(scheduleId)
+                .findAllBySchedule_IdOrderByBookingDateDescIdDesc(scheduleId)
                 .stream()
                 .map(bookingMapper::toResponse)
                 .toList();
     }
-
 
 
     // FIND ALL
