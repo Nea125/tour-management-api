@@ -48,8 +48,25 @@ public interface TourRepository
 """)
     Long countTotalTours();
 
+// FIND POPULAR TOURS BASED ON RATING OR REVIEW COUNT
 
-    // FIND POPULAR TOURS BASED ON RATING OR REVIEW COUNT
+//    SELECT
+//    t.*,
+//    AVG(r.rating) AS avg_rating,
+//    COUNT(r.id) AS review_count
+//    FROM tours t JOIN reviews r ON r.tour_id = t.id
+//    WHERE t.is_deleted = false
+//    AND r.is_deleted = false
+//    GROUP BY t.id
+//    HAVING AVG(r.rating) >= 4.0
+//    OR COUNT(r.id) >= 5
+//    ORDER BY
+//    AVG(r.rating) DESC,
+//    COUNT(r.id) DESC;
+//    GROUP BY tour means:
+//    1. Collect all reviews belonging to the same tour.
+//    2. Calculate the average rating and count the reviews for that tour.
+//    3. Return one row per tour.
     @Query("""
     SELECT
         tour,

@@ -1,25 +1,27 @@
-# tour-management-api
+SQL Logical Execution Order
+1. FROM / JOIN
+   Get data from tables and join related tables.
+2. WHERE
+   Filter individual rows before grouping.
+   Example: only include PAID bookings.
+3. GROUP BY
+   Group rows that share the same value.
+   Example: group bookings by destination.
+4. HAVING
+   Filter groups after grouping and aggregation.
+   Example: only destinations with more than 5 bookings.
+5. SELECT
+   Choose columns and calculate values using aggregate functions such as COUNT(), SUM(), and AVG().
+6. ORDER BY
+   Sort the final results.
+   Example: sort destinations by booking count in descending order.
+7. LIMIT
+   Restrict the number of rows returned.
+   Example: return only the top 10 destinations.
 
-==== SQL Logical Execution Order ====
+. NOTE:
+ Queries executed in order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT
 
-1.FROM / JOIN
-Get data from tables and join them.
-
-2.WHERE
-Filter rows, e.g. only PAID bookings.
-
-3.GROUP BY
-Group bookings by destination.
-
-4.HAVING
-Filter groups, if needed.
-
-5.SELECT
-Choose columns and calculate COUNT().
-
-
-6.ORDER BY
-Sort destinations by booking count.
-
-7.LIMIT
- Restricts the number of rows returned, e.g., the top 10 destinations.
+ GROUP BY = group the rows.
+ COUNT(), SUM(), AVG(), MAX(), MIN() = aggregate functions.
+ HAVING = filter groups based on aggregate results.
