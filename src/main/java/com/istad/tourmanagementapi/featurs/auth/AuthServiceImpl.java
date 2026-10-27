@@ -148,7 +148,7 @@ public class AuthServiceImpl implements AuthService {
         userProfile.setPhone(request.phone());
         userProfile.setGender(request.gender());
         userProfile.setDateOfBirth(request.dateOfBirth());
-        userProfile.setRole(UserRole.ADMIN);
+        userProfile.setRole(UserRole.CUSTOMER);
         userProfile.setStatus(UserStatus.ACTIVE);
         userProfile.setIsDeleted(false);
 
@@ -166,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
         RoleRepresentation roleCustomer = keycloak
                 .realm(realm)
                 .roles()
-                .get(UserRole.ADMIN.name())
+                .get(UserRole.CUSTOMER.name())
                 .toRepresentation();
 
         // Assign CUSTOMER role to user
@@ -184,7 +184,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Realm roles assigned to user {}: {}", userId, assignedRoles);
 
-        if (!assignedRoles.contains(UserRole.ADMIN.name())) {
+        if (!assignedRoles.contains(UserRole.CUSTOMER.name())) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "Failed to assign CUSTOMER role"
